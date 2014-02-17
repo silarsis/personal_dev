@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
 
   # No forwarded ports on this - we assume the vagrant server should only
   # be accessible locally. If this is wrong, feel free to add forwards in here.
-  config.vm.network "forwarded_port", guest: 8000, host: 8000
+  #config.vm.network "forwarded_port", guest: 8000, host: 8000
 
   config.vm.provision "docker"
   config.vm.provision :shell, :path => "bootstrap.sh"
