@@ -97,6 +97,9 @@ class DockerCommands
 	private
 
 	def load_config fnames
+		# The import process is a smidge wrong - imports are defined under
+		# image names, but apply globally. Should shift to a list of imports
+		# to be done globally, optionally with overrides if we feel we need them.
 		@config = {}
 		fnames.each do |fname|
 			fname = findYAML fname
