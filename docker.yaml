@@ -1,0 +1,14 @@
+# Shipyard, to provide a web interface for monitoring the docker containers
+shipyard:
+  container:
+    Image: shipyard/shipyard
+    Hostname: shipyard
+    openStdin: True
+    Tty: True
+    ExposedPorts:
+      8000/tcp: {}
+  run:
+    portBindings:
+      8000/tcp:
+        -
+          HostPort: "8000"
