@@ -20,3 +20,6 @@ service docker restart
 
 # Install OpenVSwitch
 apt-get install -q -y --force-yes openvswitch-switch
+
+# Link our script into the path - set your env variable if you want a default config file
+ln -s /vagrant/dctl.rb /usr/local/bin/dctl

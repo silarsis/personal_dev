@@ -32,19 +32,19 @@ class DockerCommands
 				options.fnames << fname
 			end
 			opts.on("-l", "--list", "List available config filenames") do
-				Dir.glob('/vagrant/docker/*.yaml').each { |fname| puts File.basename(fname, '.yaml') }
+				puts configFiles
 			end
 			opts.on("-v", "--verbose", "Verbose logging") do
 				LOG.level = Logger::DEBUG
 			end
 			opts.on_tail('-h', '--help', 'Show this message') do
 				puts opts
-				puts "There is no default config file, one must be provided or this command will silently fail"
+				puts "There must always be a config file, either via '-f' or the 'DCTL_CONFIG' environment variable"
 				exit
 			end
 		end
 		optparse.parse!
-		options.fnames << ENV['DCTL_CONFIG'] if ENV.has_key? 'DCTL_CONFIG' and options.fnames.empty?
+		options.fnames << ENV['DCTL_CONFIG'] if ENV.has_key? 'DCTL_CONFIG' and options.fnames.empty? and !ENV['DCTL_CONFIG'].empty?
 		options
 	end
 
@@ -82,7 +82,7 @@ class DockerCommands
 	end
 
 	def stop
-		Docker::Container.all.map { |c| c.delete }
+		containersConfiguredAndRunning.each { |c| c['running'].stop }
 	end
 
 	def provision
@@ -112,12 +112,12 @@ class DockerCommands
 	def load_config fnames
 		@config = {}
 		fnames.each do |fname|
-			fname = find_yaml fname
+			fname = findYAML fname
 			LOG.debug "Loading #{fname}"
 			@config.update YAML.load_file(fname)
 			@config.each_pair do |name, data|
 				if data.has_key? 'import'
-					fname = find_yaml data['import']
+					fname = findYAML data['import']
 					LOG.debug "  Loading #{fname}"
 					@config.update YAML.load_file(fname)
 				end
@@ -129,22 +129,25 @@ class DockerCommands
 
 	def updateConfigWithLiveData
 		Docker::Container.all.each do |container|
-			json = container.json
-			imageName = json['Config']['Image']
+			imageName = container.json['Config']['Image']
 			configEntry = @config.find{ |k, v| v.has_key? 'container' and v['container']['Image'] == imageName }
 			if configEntry.nil?
-				@config[imageName] = {'json' => json}
+				@config[imageName] = {'running' => container}
 			else
-				configEntry[1]['json'] = json
+				configEntry[1]['running'] = container
 			end
 		end
 	end
 
-	def find_yaml fname
+	def findYAML fname
 		if !fname.end_with?('.yaml') and File.exist?("/vagrant/docker/#{fname}.yaml")
 			fname = "/vagrant/docker/#{fname}.yaml"
 		end
 		fname
+	end
+
+	def self.configFiles
+		Dir.glob('/vagrant/docker/*.yaml').map { |fname| File.basename(fname, '.yaml') }
 	end
 
 	def enhanceEnvironment(env)
@@ -165,22 +168,21 @@ class DockerCommands
 	end
 
 	def containersConfiguredAndRunning
-		@config.select{ |k, v| v.has_key? 'container' and v.has_key? 'json' }
+		@config.select{ |k, v| v.has_key? 'container' and v.has_key? 'running' }
 	end
 
 	def containersConfiguredAndNotRunning
-		@config.select{ |k, v| v.has_key? 'container' and !v.has_key? 'json' }
+		@config.select{ |k, v| v.has_key? 'container' and !v.has_key? 'running' }
 	end
 
 	def containersRunningAndNotConfigured
-		@config.select{ |k, v| !v.has_key? 'container' and v.has_key? 'json' }
+		@config.select{ |k, v| !v.has_key? 'container' and v.has_key? 'running' }
 	end
 end
 
 options = DockerCommands.parse(ARGV)
 if options.fnames.empty?
-	fnames = Dir.glob('/vagrant/docker/*.yaml').map { |fname| File.basename(fname, '.yaml') }
-	puts "No config file provided, please use '-f' to specify one of #{fnames.join(', ')}"
+	puts "No config file provided, please use '-f' to specify one of #{DockerCommands.configFiles.join(', ')}"
 end
 if !options.fnames.empty?
 	dc = DockerCommands.new :fnames => options.fnames
