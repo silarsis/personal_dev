@@ -18,4 +18,5 @@ gem install docker-api
 echo 'DOCKER_OPTS="-d -H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock"' > /etc/default/docker
 service docker restart
 
-# Install shipyard as the first docker container
+# Install OpenVSwitch
+apt-get install -q -y --force-yes openvswitch-switch
