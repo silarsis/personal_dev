@@ -19,7 +19,6 @@ class DockerCommands
 		Docker.validate_version!
 		load_config options[:fnames]
 		@main_ip = `ifconfig docker0 | grep 'inet addr'`.split(':')[1].split[0]
-		register_with_shipyard
 	end
 
 	def self.parse(args)
@@ -57,7 +56,7 @@ class DockerCommands
 	end
 
 	def run
-		containersToRun.each_pair do |name, data|
+		containersConfiguredAndNotRunning.each_pair do |name, data|
 			puts "Running Container #{name}"
 			Docker::Container.create(data['container']).start(data['run'])
 		end
@@ -96,18 +95,6 @@ class DockerCommands
 	end
 
 	private
-
-	def register_with_shipyard
-		# Ensure that we're registered with shipyard, assuming shipyard is running
-		if `pgrep 'shipyard-agent'` == ""
-			key = `/vagrant/shipyard-agent -url http://#{@main_ip}:8000 -register 2>&1 | grep Agent | awk '{ print $5 }'`
-			if key != ""
-				fork do
-					exec("/vagrant/shipyard-agent -url http://#{@main_ip}:8000 -key #{key}")
-				end
-			end
-		end
-	end
 
 	def load_config fnames
 		@config = {}
@@ -182,7 +169,7 @@ end
 
 options = DockerCommands.parse(ARGV)
 if options.fnames.empty?
-	puts "No config file provided, please use '-f' to specify one of #{DockerCommands.configFiles.join(', ')}"
+	puts "No config file provided, please use '-f' or DCTL_CONFIG to specify one of: #{DockerCommands.configFiles.join(', ')}"
 end
 if !options.fnames.empty?
 	dc = DockerCommands.new :fnames => options.fnames

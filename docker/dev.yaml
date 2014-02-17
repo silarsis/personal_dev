@@ -1,5 +1,2 @@
 registry:
   import: registry
-
-shipyard:
-  import: shipyard
