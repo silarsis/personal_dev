@@ -1,0 +1,7 @@
+# ssh server, useful as an ansible blank slate
+ssh-server:
+  srcDir: /vagrant/docker/ssh-server/
+  container:
+    Image: ssh-server
+    ExposedPorts:
+      22/tcp: {}
