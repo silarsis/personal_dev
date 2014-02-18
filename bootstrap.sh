@@ -7,6 +7,8 @@ wget -q -O - https://get.docker.io/gpg | apt-key add -
 echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
 apt-get update -qq
 apt-get install -q -y --force-yes lxc-docker git ruby1.9.3 openvswitch-switch
+# Ansible requirements
+apt-get install -q -y python-pip paramiko PyYAML jinja2 httplib2
 
 # Add vagrant to the docker group, so we don't have to sudo everything.
 gpasswd -a vagrant docker
@@ -16,3 +18,8 @@ gem install docker-api
 
 # Link our script into the path - set your env variable if you want a default config file
 ln -s /vagrant/dctl.rb /usr/local/bin/dctl
+
+# Install Ansible
+cd ~vagrant
+git clone git://github.com/ansible/ansible.git
+echo ". ~vagrant/ansible/hacking/env-setup -q" >> ~/.bashrc
