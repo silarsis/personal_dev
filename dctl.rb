@@ -110,7 +110,8 @@ class DockerCommands
 
 	def provision
 		createImages
-		run
+		createContainers
+		runContainers
 	end
 
 	def restart
@@ -123,19 +124,18 @@ class DockerCommands
 	###
 
 	def load_config fnames
-		# The import process is a smidge wrong - imports are defined under
-		# image names, but apply globally. Should shift to a list of imports
-		# to be done globally, optionally with overrides if we feel we need them.
 		@config = {}
-		fnames.each do |fname|
-			fname = findYAML fname
-			LOG.debug "Loading #{fname}"
-			@config.update YAML.load_file(fname)
-			@config.each_pair do |name, data|
-				if data.has_key? 'import'
-					fname = findYAML data['import']
-					LOG.debug "  Loading #{fname}"
-					@config.update YAML.load_file(fname)
+		fnames.each do |name|
+			fname = findYAML name
+			if fname.nil?
+				LOG.error "#{name} not found"
+			else
+				LOG.debug "Loading #{fname}"
+				@config.update YAML.load_file(fname)
+				@config.each_pair do |name, data|
+					if name == 'import'
+						load_config data
+					end
 				end
 			end
 		end
@@ -156,10 +156,7 @@ class DockerCommands
 	end
 
 	def findYAML fname
-		if File.exist?("/vagrant/docker/#{fname}/yaml")
-			fname = "/vagrant/docker/#{fname}/yaml"
-		end
-		fname
+		File.exist?("/vagrant/docker/#{fname}/yaml") ? "/vagrant/docker/#{fname}/yaml" : nil
 	end
 
 	def self.configFiles
@@ -192,7 +189,7 @@ class DockerCommands
 	end
 
 	def isRunning? configItem
-		configItem.has_key? 'running' and container['running']['State']['Running']
+		configItem.has_key? 'running' and configItem['running'].json['State']['Running']
 	end
 end
 
