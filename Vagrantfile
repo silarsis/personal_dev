@@ -17,9 +17,11 @@
 # We do this so we can install https://github.com/dotless-de/vagrant-vbguest
 def plugin(name, version = nil, opts = {})
   @vagrant_home ||= opts[:home_path] || ENV['VAGRANT_HOME'] || "#{ENV['HOME']}/.vagrant.d"
-  plugins = JSON.parse(File.read("#@vagrant_home/plugins.json"))
+  plugins = File.exists?("#@vagrant_home/plugins.json") ?
+    JSON.parse(File.read("#@vagrant_home/plugins.json")) :
+    nil
 
-  if !plugins['installed'].include?(name) || (version && !version_matches(name, version))
+  if plugins.nil? || !plugins['installed'].include?(name) || (version && !version_matches(name, version))
     cmd = "vagrant plugin install"
     cmd << " --entry-point #{opts[:entry_point]}" if opts[:entry_point]
     cmd << " --plugin-source #{opts[:source]}" if opts[:source]
