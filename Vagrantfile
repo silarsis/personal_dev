@@ -48,6 +48,7 @@ VBOX_VERSION = ENV['VBOX_VERSION'] || "4.3.2"
 
 Vagrant.configure("2") do |config|
   config.vm.box = BOX_NAME
+  config.vm.box_url = BOX_URI
 
   # No forwarded ports on this - we assume the vagrant server should only
   # be accessible locally. If this is wrong, feel free to add forwards in here.
