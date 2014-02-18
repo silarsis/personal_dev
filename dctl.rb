@@ -134,7 +134,7 @@ class DockerCommands
 				@config.update YAML.load_file(fname)
 				@config.each_pair do |name, data|
 					if name == 'import'
-						load_config data
+						load_config [data]
 					end
 				end
 			end
