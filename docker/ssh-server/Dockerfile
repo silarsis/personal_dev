@@ -9,4 +9,4 @@ RUN apt-get -y -q update; \
 ADD id_rsa.pub /root/.ssh/authorized_keys
 RUN chmod 400 /root/.ssh/authorized_keys && chown root. /root/.ssh/authorized_keys
 EXPOSE 22
-ENTRYPOINT ["/usr/bin/sshd", "-D"]
+CMD ["/usr/sbin/sshd", "-D"]
