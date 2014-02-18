@@ -5,11 +5,15 @@
 # Set "DCTL_CONFIG" to the name of your docker config file if you want
 # a sane default (eg. "dev" to always use the "/vagrant/docker/dev.yaml"
 # file by default).
+#
+# TODO: "freeze" and "unfreeze" as per lxc-freeze or CRIU?
 
 require 'docker'
 require 'yaml'
 require 'optparse'
 require 'logger'
+require 'rubygems'
+require 'rubygems/package'
 
 LOG = Logger.new STDOUT
 LOG.level = Logger::WARN
@@ -47,18 +51,38 @@ class DockerCommands
 		options
 	end
 
-	def create
+	###
+	# Command line operations
+	###
+
+	def createImages
 		imagesToCreate.each_pair do |name, data|
 			puts "Creating Image #{name}"
 			data['container']['Env'] = enhanceEnvironment(data['container'].fetch('Env', []))
-			Docker::Image.create('fromImage' => data['container']['Image'])
+			if data.has_key? 'srcDir'
+				Docker::Image.build_from_dir(data['srcDir'])
+			else
+				Docker::Image.create('fromImage' => data['container']['Image'])
+			end
 		end
 	end
 
-	def run
-		containersConfiguredAndNotRunning.each_pair do |name, data|
-			puts "Running Container #{name}"
-			Docker::Container.create(data['container']).start(data['run'])
+	def createContainers
+		@config.each_pair do |name, data|
+			if !isRunning? data
+				puts "Creating Container #{name}"
+				container = Docker::Container.create data['container']
+				data['running'] = container
+			end
+		end
+	end
+
+	def runContainers
+		@config.each_pair do |name, data|
+			if !isRunning? data
+				puts "Running Container #{name}"
+				data['running'].start(data['run'])
+			end
 		end
 	end
 
@@ -85,7 +109,7 @@ class DockerCommands
 	end
 
 	def provision
-		create
+		createImages
 		run
 	end
 
@@ -94,7 +118,9 @@ class DockerCommands
 		start
 	end
 
+	###
 	private
+	###
 
 	def load_config fnames
 		# The import process is a smidge wrong - imports are defined under
@@ -130,14 +156,14 @@ class DockerCommands
 	end
 
 	def findYAML fname
-		if !fname.end_with?('.yaml') and File.exist?("/vagrant/docker/#{fname}.yaml")
-			fname = "/vagrant/docker/#{fname}.yaml"
+		if File.exist?("/vagrant/docker/#{fname}/yaml")
+			fname = "/vagrant/docker/#{fname}/yaml"
 		end
 		fname
 	end
 
 	def self.configFiles
-		Dir.glob('/vagrant/docker/*.yaml').map { |fname| File.basename(fname, '.yaml') }
+		Dir.glob('/vagrant/docker/*/yaml').map { |fname| File.dirname(fname).split('/').last }
 	end
 
 	def enhanceEnvironment(env)
@@ -146,10 +172,6 @@ class DockerCommands
 
 	def imageNames
 		Docker::Image.all.map{ |image| image.info['RepoTags'][0].split(':')[0]}
-	end
-
-	def containers
-		@config.map{ |container| container.json['Config']['Image'] }
 	end
 
 	def imagesToCreate
@@ -167,6 +189,10 @@ class DockerCommands
 
 	def containersRunningAndNotConfigured
 		@config.select{ |k, v| !v.has_key? 'container' and v.has_key? 'running' }
+	end
+
+	def isRunning? configItem
+		configItem.has_key? 'running' and container['running']['State']['Running']
 	end
 end
 

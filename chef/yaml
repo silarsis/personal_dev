@@ -1,0 +1,11 @@
+kibana:
+  container:
+    Image: /vagrant/docker/kibana
+    Hostname: kibana
+    ExposedPorts:
+      80/tcp: {}
+  run:
+    portBindings:
+      80/tcp:
+        -
+          HostPort: "8080"

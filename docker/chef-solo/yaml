@@ -1,0 +1,5 @@
+# Chef-solo provides a base image that chef can manage
+chef-solo:
+  srcDir: /vagrant/docker/chef-solo/
+  container:
+    Image: chef-solo
