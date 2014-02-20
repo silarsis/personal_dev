@@ -6,7 +6,7 @@
 wget -q -O - https://get.docker.io/gpg | apt-key add -
 echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
 apt-get update -qq
-apt-get install -q -y --force-yes lxc-docker git ruby1.9.3 openvswitch-switch
+apt-get install -q -y --force-yes lxc-docker git ruby1.9.3 openvswitch-switch python-pip
 
 # Add vagrant to the docker group, so we don't have to sudo everything.
 gpasswd -a vagrant docker
