@@ -17,3 +17,7 @@ So in theory, we should be able to use a single dev server as a
 drive creation of a dev server that can be accessed locally (not sure
 about this).
 
+Note, this is used as a general proving ground for things myself too -
+it's public so I can refer people to useful bits
+(Vagrantfile and bootstrap.sh are the most obvious, and maybe the
+docker/*/(Dockerfile|run.sh) pattern if that's useful).
