@@ -1,11 +1,13 @@
 # For AWS, you need the following ENV variables:
 # AWS_ACCESS_KEY_ID
 # AWS_SECRET_ACCESS_KEY
-# AWS_KEYPAIR_NAME
-# SSH_PRIVKEY
+# AWS_KEYPAIR_NAME (default 'aws-syd')
+# SSH_PRIVKEY (default '~/.ssh/aws-syd.pem')
 #
 # In addition, your AWS should have a "vagrant" security group available. The AWS setup
-# is pretty much locked down to ap-southeast-2b atm.
+# is pretty much locked down to ap-southeast-2b atm - if you want a different region,
+# you'll need change AWS_REGION and AWS_AMI, and find an appropriate image at
+# http://cloud-images.ubuntu.com/locator/ec2/
 #
 # This was largely cribbed from https://github.com/relateiq/docker_public/blob/master/Vagrantfile
 
