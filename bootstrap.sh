@@ -2,6 +2,9 @@
 #
 # Script to install any left-overs
 
+set -e
+DEBIAN_FRONTEND=noninteractive
+
 # Add the lxc-docker package and other requirements
 wget -q -O - https://get.docker.io/gpg | apt-key add -
 echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list

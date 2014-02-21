@@ -4,6 +4,9 @@
 # AWS_KEYPAIR_NAME
 # SSH_PRIVKEY
 #
+# In addition, your AWS should have a "vagrant" security group available. The AWS setup
+# is pretty much locked down to ap-southeast-2b atm.
+#
 # This was largely cribbed from https://github.com/relateiq/docker_public/blob/master/Vagrantfile
 
 ## Ubuntu 12.04 (need docker support compiled in)
@@ -65,11 +68,13 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provider :aws do |aws, override|
+    config.vm.box_url = 'https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'
     aws.access_key_id = ENV['AWS_ACCESS_KEY_ID']
     aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
-    aws.keypair_name = ENV['AWS_KEYPAIR_NAME']
+    aws.keypair_name = ENV['AWS_KEYPAIR_NAME'] || 'aws-syd'
     aws.region = ENV['AWS_REGION'] || AWS_REGION
     aws.instance_type = 'm1.small'
+    aws.security_groups = ['vagrant']
     aws.ami = ENV['AWS_AMI'] || AWS_AMI
     override.ssh.username = "ubuntu"
     override.ssh.private_key_path = ENV['SSH_PRIVKEY']
