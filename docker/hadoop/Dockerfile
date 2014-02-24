@@ -1,10 +1,11 @@
 # Instructions from http://www.alexjf.net/blog/distributed-systems/hadoop-yarn-installation-definitive-guide
 
 FROM ubuntu:quantal
-MAINTAINER Kevin Littlejohn, kevin@littlejohn.id.au
-RUN apt-get -y -q update; \
-apt-get upgrade -y; \
-apt-get -y -q install openjdk-7-jdk
+MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get -yq update && apt-get -yq upgrade
+
+RUN apt-get -yq install openjdk-7-jdk
 
 RUN mkdir -p /opt/hadoop; \
 cd /opt/hadoop; \

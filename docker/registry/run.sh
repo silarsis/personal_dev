@@ -1,2 +1,2 @@
 #!/bin/bash
-docker run -d -P -p 5000:5000 registry
+docker run -d -p 5000:5000 registry

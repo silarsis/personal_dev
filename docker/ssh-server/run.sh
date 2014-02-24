@@ -1,23 +1,28 @@
 #!/bin/bash
-[ -e /vagrant/docker/ssh-server/id_rsa ] || ssh-keygen -f /vagrant/docker/ssh-server/id_rsa -N ""
-NUM_IMAGES=$(docker images ssh-server | wc -l)
+DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CONTAINER_NAME="$( basename ${DIRNAME} )"
+
+[ -e ${DIRNAME}/id_rsa ] || ssh-keygen -f ${DIRNAME}/id_rsa -N ""
+
+NUM_IMAGES=$(docker images ${CONTAINER_NAME} | wc -l)
 if [ $NUM_IMAGES -lt 2 ]; then
-	docker build -q -t ssh-server /vagrant/docker/ssh-server/
-	IID=$(docker images ssh-server | grep -v REPOSITORY | awk '{ print $3 }')
-	docker tag ${IID} localhost:5000/ssh-server
-	docker push localhost:5000/ssh-server
+	docker build -q -t ${CONTAINER_NAME} ${DIRNAME}
+	IID=$(docker images ${CONTAINER_NAME} | grep -v REPOSITORY | awk '{ print $3 }')
+	docker tag ${IID} localhost:5000/${CONTAINER_NAME}
+	docker push localhost:5000/${CONTAINER_NAME}
 fi
-CID=$(docker run -d --expose=22 $@ ssh-server)
+CID=$(docker run -d ${CONTAINER_NAME})
+
 IP=$(docker inspect -format '{{ .NetworkSettings.IPAddress }}' ${CID})
 IFS='.' read -ra ADDR <<< "$IP"
 NAME="ssh${ADDR[3]}"
 if [ `which storm` ]; then
 	[ "$(storm search ${NAME})" != "no results found." ] && storm delete ${NAME}
-	storm add --id_file /vagrant/docker/ssh-server/id_rsa ${NAME} root@${IP} --o "StrictHostKeyChecking=no" --o "UserKnownHostsFile=/dev/null"
+	storm add --id_file ${DIRNAME}/id_rsa ${NAME} root@${IP} --o "StrictHostKeyChecking=no" --o "UserKnownHostsFile=/dev/null"
 else
 	cat << DELIM
 Host ${name}
-    identityfile /vagrant/docker/ssh-server/id_rsa
+    identityfile ${DIRNAME}/id_rsa
     hostname 172.17.0.5
     user root
     UserKnownHostsFile /dev/null

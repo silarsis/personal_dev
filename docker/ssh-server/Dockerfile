@@ -1,8 +1,9 @@
 FROM ubuntu:saucy
-MAINTAINER Kevin Littlejohn "kevin@littlejohn.id.au"
-RUN apt-get -y -q update; \
-  apt-get -y -q upgrade; \
-  apt-get -y -q install openssh-server; \
+MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get -yq update && apt-get -yq upgrade
+
+RUN apt-get -yq install openssh-server; \
   mkdir -p /var/run/sshd; \
   mkdir /root/.ssh && chmod 700 /root/.ssh
 # Add our ssh key
