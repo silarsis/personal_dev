@@ -21,3 +21,6 @@ Note, this is used as a general proving ground for things myself too -
 it's public so I can refer people to useful bits
 (Vagrantfile and bootstrap.sh are the most obvious, and maybe the
 docker/*/(Dockerfile|run.sh) pattern if that's useful).
+
+Oh, "drun.sh" in the docker/ directory provides a short-cut for running
+any of the docker/*/run.sh scripts
