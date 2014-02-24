@@ -19,6 +19,10 @@ gem install docker-api
 
 # Link our script into the path - set your env variable if you want a default config file
 ln -s /vagrant/dctl.rb /usr/local/bin/dctl
+ln -s /vagrant/docker/drun.sh /usr/local/bin/drun
 
 # Install storm, for ssh key management
 pip install stormssh
+
+# Run the registry - background this because it takes a while
+docker run -d -p 5000:5000 registry &
