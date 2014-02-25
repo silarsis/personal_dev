@@ -28,17 +28,18 @@ any of the docker/*/run.sh scripts
 Snippets that are useful:
 
 # Fake a fuse install
-RUN apt-get -y install fuse  || :
-RUN rm -rf /var/lib/dpkg/info/fuse.postinst
-RUN apt-get -y install fuse
+RUN apt-get install libfuse2
+RUN cd /tmp ; apt-get download fuse
+RUN cd /tmp ; dpkg-deb -x fuse_* .
+RUN cd /tmp ; dpkg-deb -e fuse_*
+RUN cd /tmp ; rm fuse_*.deb
+RUN cd /tmp ; echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
+RUN cd /tmp ; dpkg-deb -b . /fuse.deb
+RUN cd /tmp ; dpkg -i /fuse.deb
 
 # Install a user
 RUN adduser --disabled-password --gecos "" silarsis; \
   echo "silarsis ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV HOME /home/silarsis
 USER silarsis
-WORKDIR /home/silarsis
-
-# Delete all unused containers
-docker ps -a | grep Exit | awk '{ print $1 }' | xargs docker rm
 
