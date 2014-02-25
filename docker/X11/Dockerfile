@@ -1,9 +1,7 @@
 # Firefox over VNC
 
-FROM ubuntu:saucy
+FROM localhost:5000/ssh-server
 MAINTAINER Kevin Littlejon <kevin@littlejohn.id.au>
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -yq update && apt-get -yq upgrade
 
 # Fake a fuse install
 RUN apt-get install libfuse2
@@ -15,17 +13,27 @@ RUN cd /tmp ; echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
 RUN cd /tmp ; dpkg-deb -b . /fuse.deb
 RUN cd /tmp ; dpkg -i /fuse.deb
 
-# Install vnc, xvfb in order to create a 'fake' display and firefox
-RUN apt-get install -yq xpra rox-filer ssh pwgen xserver-xephyr xdm fluxbox xterm firefox x11vnc xvfb 
+# Install vnc, xvfb in order to create a 'fake' display
+RUN apt-get install -yq x11vnc xvfb vim xdm xpra rox-filer pwgen xserver-xephyr fluxbox
+
+# Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding. 
+RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
+RUN sed -i '/#any host/c\*' /etc/X11/xdm/Xaccess
+RUN ln -s /usr/bin/Xorg /usr/bin/X
+RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
+
+# Upstart and DBus have issues inside docker.
+RUN dpkg-divert --local --rename --add /sbin/initctl && rm -f /sbin/initctl && ln -s /bin/true /sbin/initctl
 
 # Add a user to run under
-RUN adduser --disabled-password --gecos "" silarsis; \
-  echo "silarsis ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV HOME /home/silarsis
-USER silarsis
+RUN chmod go+w,u+s /tmp
+RUN adduser --disabled-password --gecos "" silarsis \
+  && echo "silarsis ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+  && echo 'silarsis:passwd' | chpasswd
+RUN echo '/home/silarsis/docker-desktop' >> /home/silarsis/.bashrc
 
-ADD startup.sh /usr/local/bin/startup.sh
+ADD . /opt/docker-src
 
 # Note, we only ever run one copy of this...
-EXPOSE 5900
-CMD ["/usr/local/bin/startup.sh"]
+EXPOSE 22
+CMD ["/opt/docker-src/startup.sh"]
