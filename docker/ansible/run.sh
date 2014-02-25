@@ -1,5 +1,5 @@
 #!/bin/bash
-DIRNAME="$( basename "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" )"
+DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CONTAINER_NAME="$( basename ${DIRNAME} )"
 
 docker run -v /ansible -name DATA busybox true
