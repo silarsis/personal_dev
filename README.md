@@ -42,4 +42,9 @@ RUN adduser --disabled-password --gecos "" silarsis; \
   echo "silarsis ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV HOME /home/silarsis
 USER silarsis
+WORKDIR /home/silarsis
+
+
+# Delete all unused containers
+docker ps -a | grep Exit | awk '{ print $1 }' | xargs docker rm
 
