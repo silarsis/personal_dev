@@ -1,5 +1,5 @@
 #!/bin/bash
-DIRNAME="$( basename "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" )"
+DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CONTAINER_NAME="$( basename ${DIRNAME} )"
 
 NUM_IMAGES=$(docker images ${CONTAINER_NAME} | wc -l)
@@ -11,3 +11,4 @@ if [ $NUM_IMAGES -lt 2 ]; then
 fi
 
 docker run -d -p 5900:5900 ${CONTAINER_NAME}
+
