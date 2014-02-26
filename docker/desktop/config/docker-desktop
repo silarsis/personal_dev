@@ -23,7 +23,7 @@ while getopts ":s:d:h-:" opt; do
       
       if [ "$SCREEN_SIZE" != "$NEW_SCREEN_SIZE" ]; then
         FLAG=1
-	SCREEN_SIZE=$NEW_SCREEN_SIZE
+        SCREEN_SIZE=$NEW_SCREEN_SIZE
       fi
       ;;
     d)
