@@ -69,6 +69,11 @@ Vagrant.configure("2") do |config|
   config.vm.provider :vbox do |vbox, override|
     config.vm.box = VBOX_NAME
     config.vm.box_url = VBOX_URI
+    vbox.name = VBOX_NAME
+    vbox.customize ["modifyvm", :id, "--memory", "2048"]
+    vbox.customize ["modifyvm", :id, "--cpus", "4"]
+    vbox.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
+    config.vm.synced_folder File.expand_path("~"), "/home/vagrant/host_home"
   end
 
   config.vm.provider :aws do |aws, override|
