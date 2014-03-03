@@ -56,3 +56,8 @@ docker ps -a | grep Exit | awk '{ print $1 }' | xargs docker rm
 # Find the IP of a container:
 docker inspect -format '{{ .NetworkSettings.IPAddress }}' <containerid>
 
+
+# Register the hostname in /etc/hosts
+#if [ ! sed '/\([0-9\.]*\) registry.dev/,${s//'"${IP}"' registry.dev/;b};$q1' /etc/hosts ]; then
+#	echo "${IP} registry.dev" >> /etc/hosts
+#end
