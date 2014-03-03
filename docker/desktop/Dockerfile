@@ -18,16 +18,9 @@
 
 
 FROM ubuntu:saucy
-MAINTAINER Roberto G. Hashioka "roberto_hashioka@hotmail.com"
+MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 ENV DEBIAN_FRONTEND noninteractive
-
 RUN apt-get -yq update && apt-get -yq upgrade
-
-# Winswitch, experimental
-RUN apt-get -yq install curl && curl http://winswitch.org/gpg.asc | apt-key add -
-RUN echo "deb http://winswitch.org/ quantal main" > /etc/apt/sources.list.d/winswitch.list
-
-# Set the env variable DEBIAN_FRONTEND to noninteractive
 
 # Fake a fuse install
 RUN apt-get install libfuse2
@@ -42,14 +35,19 @@ RUN cd /tmp ; dpkg -i /fuse.deb
 # Upstart and DBus have issues inside docker. We work around in order to install firefox.
 RUN dpkg-divert --local --rename --add /sbin/initctl && rm -f /sbin/initctl && ln -s /bin/true /sbin/initctl
 
+# Winswitch, experimental
+RUN apt-get -yq install curl && curl http://winswitch.org/gpg.asc | apt-key add -
+RUN echo "deb http://winswitch.org/ quantal main" > /etc/apt/sources.list.d/winswitch.list
+
 # Installing the required environment
-RUN apt-get install -y xpra rox-filer ssh pwgen xserver-xephyr xdm fluxbox firefox xterm winswitch
+RUN apt-get install -y xpra rox-filer ssh xserver-xephyr xdm fluxbox firefox xterm winswitch
 
 # Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding. 
 RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
 RUN sed -i '/#any host/c\*' /etc/X11/xdm/Xaccess
 RUN ln -s /usr/bin/Xorg /usr/bin/X
 RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
+RUN sed 's/session    required     pam_loginuid.so/session optional pam_loginuid.so/' -i /etc/pam.d/sshd 
 
 # Set locale (fix the locale warnings)
 RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
