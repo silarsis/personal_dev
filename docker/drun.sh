@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# Script to build, push, and run containers
+
+USERNAME="silarsis" # Change this for the <username>/<image> tag name
+REGISTRY="localhost:5000" # Change this for a different private registry location
 
 set -e
 
@@ -44,7 +49,7 @@ echo "Running ${CONTAINER_NAME} in ${DIRNAME}"
 
 [ `type -t build` ] || build () {
 	echo ${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} ${DIRNAME}
-	${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} -t silarsis/${CONTAINER_NAME} ${DIRNAME}
+	${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} -t ${USERNAME}/${CONTAINER_NAME} ${DIRNAME}
 }
 [ `type -t run` ] || run () {
 	echo exec ${RUN_DOCKER} -i -t ${CONTAINER_NAME} ${CMD}
@@ -52,9 +57,9 @@ echo "Running ${CONTAINER_NAME} in ${DIRNAME}"
 }
 [ `type -t push` ] || push () {
 	IID=$(docker images -q ${CONTAINER_NAME} | head -1)
-	echo docker tag ${IID} localhost:5000/${CONTAINER_NAME}
-	docker tag ${IID} localhost:5000/${CONTAINER_NAME}
-	docker push localhost:5000/${CONTAINER_NAME}
+	echo docker tag ${IID} ${REGISTRY}/${CONTAINER_NAME}
+	docker tag ${IID} ${REGISTRY}/${CONTAINER_NAME}
+	docker push ${REGISTRY}/${CONTAINER_NAME}
 }
 
 [ ${BUILD} -eq 1 ] && { echo "Building..."; build; }
