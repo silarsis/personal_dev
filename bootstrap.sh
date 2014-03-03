@@ -7,7 +7,7 @@ DEBIAN_FRONTEND=noninteractive
 # Add the lxc-docker package and other requirements
 wget -q -O - https://get.docker.io/gpg | apt-key add -
 echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
-apt-get update -qq
+apt-get update -qq && apt-get -yq upgrade
 apt-get install -yq lxc-docker git ruby1.9.3 openvswitch-switch python-pip python-dev dnsmasq
 
 # Add user to the docker group, so we don't have to sudo everything.
