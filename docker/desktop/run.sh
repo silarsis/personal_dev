@@ -1,2 +1,2 @@
 #!/bin/bash
-run () { CID=$(docker run -d -p 5900:22 ${CONTAINER_NAME}); docker logs $CID | grep '^User:'; }
+run () { CID=$(${RUN_DOCKER} -d -p 5900:22 ${CONTAINER_NAME} ${CMD}); docker logs $CID | grep '^User:'; }

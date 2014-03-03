@@ -1,5 +1,5 @@
 # Ansible "server"
-FROM localhost:5000/ssh-server
+FROM silarsis/ssh-server
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 ENV DEBIAN_FRONTEND noninteractive
 

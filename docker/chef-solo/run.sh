@@ -1,3 +1,3 @@
 #!/bin/bash
 
-run () { CID=$(docker run -d ${CONTAINER_NAME}); }
+run () { CID=$(${RUN_DOCKER} -d ${CONTAINER_NAME} ${CMD}); }

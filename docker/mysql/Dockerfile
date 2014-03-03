@@ -4,10 +4,8 @@
 # NOTE: This is a non-persistent container. If you want to non-persist
 # the database, make sure you "-v srcdir:/var/lib/mysql" on docker run.
 
-FROM ubuntu:saucy
+FROM silarsis/base
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -yq update && apt-get -yq upgrade
 
 RUN apt-get -yq install mysql-server
 

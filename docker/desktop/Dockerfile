@@ -17,7 +17,7 @@
 # Date: 07/28/2013
 
 
-FROM localhost:5000/base
+FROM silarsis/base
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
 # Winswitch, experimental

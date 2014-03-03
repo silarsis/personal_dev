@@ -1,17 +1,7 @@
 # Firefox over VNC
 
-FROM localhost:5000/ssh-server
+FROM silarsis/ssh-server
 MAINTAINER Kevin Littlejon <kevin@littlejohn.id.au>
-
-# Fake a fuse install
-RUN apt-get install libfuse2
-RUN cd /tmp ; apt-get download fuse
-RUN cd /tmp ; dpkg-deb -x fuse_* .
-RUN cd /tmp ; dpkg-deb -e fuse_*
-RUN cd /tmp ; rm fuse_*.deb
-RUN cd /tmp ; echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
-RUN cd /tmp ; dpkg-deb -b . /fuse.deb
-RUN cd /tmp ; dpkg -i /fuse.deb
 
 # Install vnc, xvfb in order to create a 'fake' display
 RUN apt-get install -yq x11vnc xvfb vim xdm xpra rox-filer pwgen xserver-xephyr fluxbox

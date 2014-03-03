@@ -1,6 +1,6 @@
 #!/bin/bash
 run () {
-	docker run -d -p 5900:22 ${CONTAINER_NAME}
+	${RUN_DOCKER} -d -p 5900:22 ${CONTAINER_NAME} ${CMD}
 	IP=$(docker inspect -format '{{ .NetworkSettings.IPAddress }}' ${CID})
 	IFS='.' read -ra ADDR <<< "$IP"
 	NAME="ssh${ADDR[3]}"

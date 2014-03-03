@@ -1,6 +1,6 @@
 #!/bin/bash
 
 run () {
-	[ `docker ps -a | grep DATA` ] || docker run -v /ansible -name DATA busybox true
-	docker run -t -i -rm -volumes-from DATA -name ${CONTAINER_NAME} ${CONTAINER_NAME}
+	[ `docker ps -a | grep DATA` ] || ${BUILD_DOCKER} -v /ansible -name DATA busybox true
+	${RUN_DOCKER} -t -i -rm -volumes-from DATA -name ${CONTAINER_NAME} ${CONTAINER_NAME} ${CMD}
 }
