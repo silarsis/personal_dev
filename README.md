@@ -37,13 +37,22 @@ RUN cd /tmp ; echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
 RUN cd /tmp ; dpkg-deb -b . /fuse.deb
 RUN cd /tmp ; dpkg -i /fuse.deb
 
-# Install a user
+# Fix the locale:
+RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
+
+# Fix initctl
+RUN dpkg-divert --local --rename --add /sbin/initctl && rm -f /sbin/initctl && ln -s /bin/true /sbin/initctl
+
+# Install a user:
 RUN adduser --disabled-password --gecos "" silarsis; \
   echo "silarsis ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV HOME /home/silarsis
 USER silarsis
 WORKDIR /home/silarsis
 
-# Delete all unused containers
+# Delete all unused containers:
 docker ps -a | grep Exit | awk '{ print $1 }' | xargs docker rm
+
+# Find the IP of a container:
+docker inspect -format '{{ .NetworkSettings.IPAddress }}' <containerid>
 

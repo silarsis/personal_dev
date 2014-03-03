@@ -27,12 +27,6 @@ This will run the grunt server inside the container.
 
 The default grunt port (9000) is exposed by default.
 
-Docker hints:
-
-  - `docker start -a -i <containerid>` will restart a stopped container and re-attach you to the bash process
-  - `docker inspect -format '{{ .NetworkSettings.IPAddress }}' <containerid>` will give you the IP address of the currently running container
-  - `docker run -P -i -t silarsis/yeoman` will map port 9000 to a port on the host, and `docker port <containerid> 9000` will show you what port that ends up on
-
 This Dockerfile should provide a good base image for development work - as an example, based on the [Docker Node.js example](http://docs.docker.io/en/latest/examples/nodejs_web_app/), you could have a Dockerfile that looks like (**untested**, assumes your code is in the same directory as your Dockerfile):
 
 ```
