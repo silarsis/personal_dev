@@ -17,23 +17,8 @@
 # Date: 07/28/2013
 
 
-FROM ubuntu:saucy
+FROM localhost:5000/base
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -yq update && apt-get -yq upgrade
-
-# Fake a fuse install
-RUN apt-get install libfuse2
-RUN cd /tmp ; apt-get download fuse
-RUN cd /tmp ; dpkg-deb -x fuse_* .
-RUN cd /tmp ; dpkg-deb -e fuse_*
-RUN cd /tmp ; rm fuse_*.deb
-RUN cd /tmp ; echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
-RUN cd /tmp ; dpkg-deb -b . /fuse.deb
-RUN cd /tmp ; dpkg -i /fuse.deb
-
-# Upstart and DBus have issues inside docker. We work around in order to install firefox.
-RUN dpkg-divert --local --rename --add /sbin/initctl && rm -f /sbin/initctl && ln -s /bin/true /sbin/initctl
 
 # Winswitch, experimental
 RUN apt-get -yq install curl && curl http://winswitch.org/gpg.asc | apt-key add -
