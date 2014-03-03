@@ -8,7 +8,7 @@ DEBIAN_FRONTEND=noninteractive
 wget -q -O - https://get.docker.io/gpg | apt-key add -
 echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
 apt-get update -qq
-apt-get install -q -y --force-yes lxc-docker git ruby1.9.3 openvswitch-switch python-pip python-dev
+apt-get install -yq lxc-docker git ruby1.9.3 openvswitch-switch python-pip python-dev dnsmasq
 
 # Add user to the docker group, so we don't have to sudo everything.
 [ $(id -u vagrant >/dev/null 2>&1) ] && gpasswd -a vagrant docker
@@ -18,11 +18,21 @@ apt-get install -q -y --force-yes lxc-docker git ruby1.9.3 openvswitch-switch py
 gem install docker-api
 
 # Link our script into the path - set your env variable if you want a default config file
-ln -s /vagrant/dctl.rb /usr/local/bin/dctl
 ln -s /vagrant/docker/drun.sh /usr/local/bin/drun
+
+DOCKERIP=`/sbin/ifconfig docker0 | grep 'inet addr' | awk 'BEGIN { FS = "[ :]+" } ; { print $4 }'`
+
+# Overwrite the dnsmasq configuration
+cat << EOF > /etc/dnsmasq.conf
+domain-needed
+local=/dev/
+listen-address=${DOCKERIP}
+EOF
+service dnsmasq restart
+sed -i 's/nameserver 127.0.0.1/nameserver ${DOCKERIP}/' /etc/resolv.conf
 
 # Install storm, for ssh key management
 pip install stormssh
 
 # Run the registry - background this because it takes a while
-docker run -d -p 5000:5000 registry &
+/vagrant/docker/drun.sh -r registry
