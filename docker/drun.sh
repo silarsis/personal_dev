@@ -40,7 +40,8 @@ while getopts ":bB:prR:c:h" opt; do
 done
 
 shift $(( ${OPTIND} - 1 ))
-CONTAINER_NAME=${*}
+CONTAINER_NAME=$1
+shift
 CMD=$@
 DIRNAME="/vagrant/docker/${CONTAINER_NAME}"
 echo "Running ${CONTAINER_NAME} in ${DIRNAME}"
