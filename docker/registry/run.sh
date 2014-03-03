@@ -1,2 +1,2 @@
 #!/bin/bash
-run () { docker run -d -p 5000:5000 -v /tmp/registry:/tmp/registry registry; }
+run () { docker run -d -p 5000:5000 -v /tmp/registry:/tmp/registry --name=registry registry; }
