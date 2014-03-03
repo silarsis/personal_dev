@@ -61,15 +61,13 @@ Vagrant.configure("2") do |config|
   # No forwarded ports on this - we assume the vagrant server should only
   # be accessible locally. If this is wrong, feel free to add forwards in here.
   #config.vm.network "forwarded_port", guest: 8000, host: 8000
-  # Forwarding 5900 for VNC for our firefox VNC container
-  config.vm.network "forwarded_port", guest: 5900, host: 5900
-  config.vm.network "forwarded_port", guest: 5000, host: 5000
-  config.vm.network "forwarded_port", guest: 4243, host: 4243
 
   config.vm.provision "docker"
   config.vm.provision :shell, :path => "bootstrap.sh"
 
   config.vm.provider :vbox do |vbox, override|
+    config.vm.network :public_network, bridge: "en0: Wi-Fi (AirPort)"
+    config.vm.network :private_network, ip: "10.42.42.2"
     config.vm.box = VBOX_NAME
     config.vm.box_url = VBOX_URI
     vbox.name = VBOX_NAME
