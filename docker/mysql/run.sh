@@ -1,6 +1,7 @@
 #!/bin/bash
 DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CONTAINER_NAME="$( basename ${DIRNAME} )"
+echo "Running ${CONTAINER_NAME} in ${DIRNAME}"
 
 NUM_IMAGES=$(docker images ${CONTAINER_NAME} | wc -l)
 if [ $NUM_IMAGES -lt 2 ]; then
@@ -9,4 +10,5 @@ if [ $NUM_IMAGES -lt 2 ]; then
 	docker tag ${IID} localhost:5000/${CONTAINER_NAME}
 	docker push localhost:5000/${CONTAINER_NAME}
 fi
+
 docker run -d -p 3306:3306 ${CONTAINER_NAME}
