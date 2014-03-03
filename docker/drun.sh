@@ -39,15 +39,21 @@ while getopts ":bB:prR:c:h" opt; do
 	esac
 done
 
+# Run by default
+(( BUILD == PUSH == RUN == 0 )) && RUN=1
+
+# Grab the container name and any trailing arguments
 shift $(( ${OPTIND} - 1 ))
 CONTAINER_NAME=$1
 shift
 CMD=$@
-DIRNAME="/vagrant/docker/${CONTAINER_NAME}"
-echo "Running ${CONTAINER_NAME} in ${DIRNAME}"
 
+DIRNAME="/vagrant/docker/${CONTAINER_NAME}"
+
+# Import any overrides for build, push and run
 [ -e "${DIRNAME}/run.sh" ] && source "${DIRNAME}/run.sh"
 
+# Default implementations of each of these
 [ `type -t build` ] || build () {
 	echo ${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} ${DIRNAME}
 	${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} -t ${USERNAME}/${CONTAINER_NAME} ${DIRNAME}
@@ -63,6 +69,7 @@ echo "Running ${CONTAINER_NAME} in ${DIRNAME}"
 	docker push ${REGISTRY}/${CONTAINER_NAME}
 }
 
+# Now, make it so...
 [ ${BUILD} -eq 1 ] && { echo "Building..."; build; }
 [ ${PUSH} -eq 1 ] && { echo "Pushing..."; push; }
 [ ${RUN} -eq 1 ] && { echo "Running..."; run; }
