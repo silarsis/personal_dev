@@ -55,6 +55,7 @@ def version_matches(name, version)
 end
 
 plugin "vagrant-vbguest"
+plugin "facter"
 
 Vagrant.configure("2") do |config|
   # No forwarded ports on this - we assume the vagrant server should only
@@ -62,6 +63,8 @@ Vagrant.configure("2") do |config|
   #config.vm.network "forwarded_port", guest: 8000, host: 8000
   # Forwarding 5900 for VNC for our firefox VNC container
   config.vm.network "forwarded_port", guest: 5900, host: 5900
+  config.vm.network "forwarded_port", guest: 5000, host: 5000
+  config.vm.network "forwarded_port", guest: 4243, host: 4243
 
   config.vm.provision "docker"
   config.vm.provision :shell, :path => "bootstrap.sh"
@@ -70,10 +73,12 @@ Vagrant.configure("2") do |config|
     config.vm.box = VBOX_NAME
     config.vm.box_url = VBOX_URI
     vbox.name = VBOX_NAME
-    vbox.customize ["modifyvm", :id, "--memory", "2048"]
-    vbox.customize ["modifyvm", :id, "--cpus", "4"]
+    # Using Facter to give us a machine with a quarter the memory and half the cpus of host
+    vbox.customize ["modifyvm", :id, "--memory", [Facter.memorysize_mb.to_i/4, 512].max]
+    vbox.customize ["modifyvm", :id, "--cpus", [Facter.processorcount.to_i/2, 1].max]
     vbox.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
     config.vm.synced_folder File.expand_path("~"), "/home/vagrant/host_home"
+    config.vm.synced_folder File.expand_path("~/.docker_registry"), "/tmp/registry"
   end
 
   config.vm.provider :aws do |aws, override|
