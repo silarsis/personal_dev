@@ -39,6 +39,32 @@ while getopts ":bB:prR:c:h" opt; do
 	esac
 done
 
+containerIP () {
+	# Call with the container ID, sets ${IP}
+	IP=$(docker inspect -format '{{ .NetworkSettings.IPAddress }}' $1)
+}
+
+sshConfig () {
+	# Relies on the following being set: CID, DIRNAME
+	containerIP ${CID}
+	IFS='.' read -ra ADDR <<< "$IP"
+	NAME="ssh${ADDR[3]}"
+	if [ `which storm` ]; then
+		[ "$(storm search ${NAME})" != "no results found." ] && storm delete ${NAME}
+		storm add --id_file ${DIRNAME}/id_rsa ${NAME} root@${IP} --o "StrictHostKeyChecking=no" --o "UserKnownHostsFile=/dev/null"
+	else
+		cat << DELIM
+Host ${NAME}
+identityfile ${DIRNAME}/id_rsa
+hostname ${IP}
+user root
+UserKnownHostsFile /dev/null
+StrictHostKeyChecking no
+port 22
+DELIM
+	fi
+}
+
 # Run by default
 (( BUILD == PUSH == RUN == 0 )) && RUN=1
 
