@@ -61,3 +61,6 @@ docker inspect -format '{{ .NetworkSettings.IPAddress }}' <containerid>
 #if [ ! sed '/\([0-9\.]*\) registry.dev/,${s//'"${IP}"' registry.dev/;b};$q1' /etc/hosts ]; then
 #	echo "${IP} registry.dev" >> /etc/hosts
 #end
+
+# Commit an image ready to be run again, with /bin/bash as the command
+docker commit -run='{"Cmd":["/bin/bash"], "User":"root"}' <containerID> <tag>
