@@ -75,6 +75,7 @@ Vagrant.configure("2") do |config|
     vbox.customize ["modifyvm", :id, "--memory", [Facter.memorysize_mb.to_i/4, 512].max]
     vbox.customize ["modifyvm", :id, "--cpus", [Facter.processorcount.to_i/2, 1].max]
     vbox.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
+    # Map a couple of drives through
     config.vm.synced_folder File.expand_path("~"), "/home/vagrant/host_home"
     config.vm.synced_folder File.expand_path("~/.docker_registry"), "/tmp/registry"
   end
