@@ -1,0 +1,32 @@
+# For AWS, you need the following ENV variables:
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
+# AWS_KEYPAIR_NAME (default 'aws-syd')
+# SSH_PRIVKEY (default '~/.ssh/aws-syd.pem')
+#
+# In addition, your AWS should have a "stevedore" security group available. The AWS setup
+# is pretty much locked down to ap-southeast-2b atm - if you want a different region,
+# you'll need change AWS_REGION and AWS_AMI, and find an appropriate image at
+# http://cloud-images.ubuntu.com/locator/ec2/
+
+# Ubuntu 13.10
+AWS_REGION = 'ap-southeast-2'
+AWS_AMI = 'ami-0329b739'
+
+Vagrant.configure("2") do |config|
+  config.vm.provision "docker"
+  config.vm.provision :shell, :path => "bootstrap.sh"
+
+  config.vm.provider :aws do |aws, override|
+    config.vm.box_url = 'https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'
+    aws.access_key_id = ENV['AWS_ACCESS_KEY_ID']
+    aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+    aws.keypair_name = ENV['AWS_KEYPAIR_NAME'] || 'aws-syd'
+    aws.region = ENV['AWS_REGION'] || AWS_REGION
+    aws.instance_type = 'm1.small'
+    aws.security_groups = ['stevedore']
+    aws.ami = ENV['AWS_AMI'] || AWS_AMI
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = ENV['SSH_PRIVKEY']
+  end
+end
