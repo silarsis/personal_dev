@@ -7,11 +7,17 @@ REGISTRY="localhost:5000" # Change this for a different private registry locatio
 
 set -e
 
-BUILD=0
 BUILD_DOCKER="docker build"
+RUN_DOCKER="docker run"
+BUILD=0
 PUSH=0
 RUN=0
-RUN_DOCKER="docker run"
+
+veval () {
+	# Verbose eval
+	echo $*
+	eval $*
+}
 
 while getopts ":bB:prR:c:h" opt; do
 	case $opt in
@@ -81,18 +87,15 @@ DIRNAME="/vagrant/docker/${CONTAINER_NAME}"
 
 # Default implementations of each of these
 [ `type -t build` ] || build () {
-	echo ${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} ${DIRNAME}
-	${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} -t ${USERNAME}/${CONTAINER_NAME} ${DIRNAME}
+	veval ${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} ${DIRNAME}
+	veval docker tag ${CONTAINER_NAME} ${USERNAME}/${CONTAINER_NAME}
 }
 [ `type -t run` ] || run () {
-	echo exec ${RUN_DOCKER} -i -t ${CONTAINER_NAME} ${CMD}
-	exec ${RUN_DOCKER} -i -t ${CONTAINER_NAME} ${CMD}
+	veval exec ${RUN_DOCKER} -i -t ${CONTAINER_NAME} ${CMD}
 }
 [ `type -t push` ] || push () {
-	IID=$(docker images -q ${CONTAINER_NAME} | head -1)
-	echo docker tag ${IID} ${REGISTRY}/${CONTAINER_NAME}
-	docker tag ${IID} ${REGISTRY}/${CONTAINER_NAME}
-	docker push ${REGISTRY}/${CONTAINER_NAME}
+	veval docker tag ${CONTAINER_NAME} ${REGISTRY}/${CONTAINER_NAME}
+	veval docker push ${REGISTRY}/${CONTAINER_NAME}
 }
 
 # Now, make it so...

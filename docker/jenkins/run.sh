@@ -1,6 +1,5 @@
 #!/bin/bash
 
 run () {
-	echo ${RUN_DOCKER} -d -p 8080:8080 -privileged michaelneale/jenkins-docker-executors ${CMD}
-	${RUN_DOCKER} -d -p 8080:8080 -privileged michaelneale/jenkins-docker-executors ${CMD}
+	veval ${RUN_DOCKER} -d -p 8080:8080 -privileged -v /var/lib/jenkins:/var/lib/jenkins --name jenkins michaelneale/jenkins-docker-executors ${CMD}
 }
