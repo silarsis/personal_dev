@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, :path => "bootstrap.sh"
 
   config.vm.provider :aws do |aws, override|
+    config.vm.box = 'dummy'
     config.vm.box_url = 'https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'
     aws.access_key_id = ENV['AWS_ACCESS_KEY_ID']
     aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
