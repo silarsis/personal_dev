@@ -20,5 +20,6 @@ ADD stevedore /opt/stevedore
 
 # Set our base directory
 WORKDIR /opt/stevedore
+RUN bundle install
 
 CMD ["rails", "server"]
