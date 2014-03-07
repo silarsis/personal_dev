@@ -8,13 +8,17 @@ RUN chmod go+w,u+s /tmp
 
 # Fake a fuse install
 RUN apt-get install libfuse2
-RUN cd /tmp ; apt-get download fuse
-RUN cd /tmp ; dpkg-deb -x fuse_* .
-RUN cd /tmp ; dpkg-deb -e fuse_*
-RUN cd /tmp ; rm fuse_*.deb
-RUN cd /tmp ; echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
-RUN cd /tmp ; dpkg-deb -b . /fuse.deb
-RUN cd /tmp ; dpkg -i /fuse.deb
+RUN mkdir /tmp/fuse && \
+	cd /tmp/fuse && \
+	apt-get download fuse && \
+	dpkg-deb -x fuse_* . && \
+	dpkg-deb -e fuse_* && \
+	rm fuse_*.deb && \
+	echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst && \
+	dpkg-deb -b . /fuse.deb && \
+	dpkg -i /fuse.deb && \
+	cd / && \
+	rm -rf /tmp/fuse /fuse.deb
 
 # Fix initctl, in case it hasn't been fixed already
 RUN dpkg-divert --local --rename --add /sbin/initctl && rm -f /sbin/initctl && ln -s /bin/true /sbin/initctl
