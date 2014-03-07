@@ -58,9 +58,8 @@ plugin "vagrant-vbguest"
 plugin "facter"
 
 Vagrant.configure("2") do |config|
-  # No forwarded ports on this - we assume the vagrant server should only
-  # be accessible locally. If this is wrong, feel free to add forwards in here.
-  #config.vm.network "forwarded_port", guest: 8000, host: 8000
+  # No forwarded ports on this because we've added an actual IP on the private network below
+  #config.vm.network "forwarded_port", guest: 4040, host: 4040
 
   config.vm.provision "docker"
   config.vm.provision :shell, :path => "bootstrap.sh"
