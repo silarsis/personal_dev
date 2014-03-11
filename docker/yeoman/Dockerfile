@@ -1,6 +1,7 @@
 # Yeoman with some generators and prerequisites
 FROM silarsis/base
 MAINTAINER Kevin Littlejon <kevin@littlejohn.id.au>
+RUN apt-get -yq update && apt-get -yq upgrade
 
 # Install pre-requisites
 RUN apt-get -yq install python-software-properties software-properties-common python g++ make git ruby-compass libfreetype6
