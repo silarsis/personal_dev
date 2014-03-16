@@ -87,7 +87,7 @@ DIRNAME="/vagrant/docker/${CONTAINER_NAME}"
 
 # Default implementations of each of these
 [ `type -t build` ] || build () {
-	veval ${BUILD_DOCKER} -q -rm -t ${CONTAINER_NAME} ${DIRNAME}
+	veval ${BUILD_DOCKER} -q --rm -t ${CONTAINER_NAME} ${DIRNAME}
 	veval docker tag ${CONTAINER_NAME} ${USERNAME}/${CONTAINER_NAME}
 }
 [ `type -t run` ] || run () {
