@@ -12,16 +12,10 @@ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key 
 apt-get update -qq && apt-get -yq upgrade
 # Docker tools
 apt-get install -yq lxc-docker
-# Things I always want
-apt-get install -yq git less vim wget
-# Rails
-apt-get install -yq ruby1.9.3 ruby-dev make rubygems libsqlite3-dev nodejs
-# Jenkins
-apt-get install -yq jenkins-cli
-# Local DNS
-apt-get install -yq dnsmasq
 # Python to support storm, a ssh key manager
 apt-get install -yq python-pip python-dev
+# Things I always want
+apt-get install -yq git less vim wget socat tcpdump netcat
 
 # Add user to the docker group, so we don't have to sudo everything.
 # On a local vbox it's vagrant, on AWS it's ubuntu
