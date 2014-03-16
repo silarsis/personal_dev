@@ -47,7 +47,7 @@ done
 
 containerIP () {
 	# Call with the container ID, sets ${IP}
-	IP=$(docker inspect -format '{{ .NetworkSettings.IPAddress }}' $1)
+	IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $1)
 }
 
 sshConfig () {
