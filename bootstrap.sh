@@ -9,7 +9,9 @@ echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/doc
 echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list
 wget -q -O - https://get.docker.io/gpg | apt-key add -
 wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
-apt-get update -qq && apt-get -yq upgrade
+apt-get update -qq
+apt-get install -yq apt-cacher-ng
+apt-get -yq upgrade
 # Docker tools
 apt-get install -yq lxc-docker cgroup-lite
 # Python to support storm, a ssh key manager
@@ -51,7 +53,7 @@ sed -i 's/nameserver 127.0.0.1/nameserver ${DOCKERIP}/' /etc/resolv.conf
 pip install stormssh
 
 # Run the registry
-/vagrant/docker/drun.sh registry
+/vagrant/docker/drun.sh -v -r registry
 
 # ngrok, because it's useful
 wget -q -O - https://dl.ngrok.com/linux_386/ngrok.zip | funzip > /usr/local/bin/ngrok && chmod 755 /usr/local/bin/ngrok

@@ -67,5 +67,12 @@ if [ ! sed '/\([0-9\.]*\) registry.dev/,${s//'"${IP}"' registry.dev/;b};$q1' /et
 	echo "${IP} registry.dev" >> /etc/hosts
 end
 
+### Make changes to the docker container /etc/hosts
+RUN cp /etc/hosts /tmp/hosts
+RUN echo "x.x.x.x something" >> /tmp/hosts
+RUN mkdir -p -- /lib-override && cp `find / -iname libnss_files.so.2` /lib-override
+RUN perl -pi -e 's:/etc/hosts:/tmp/hosts:g' /lib-override/libnss_files.so.2
+ENV LD_LIBRARY_PATH /lib-override
+
 ### Commit an image ready to be run again, with /bin/bash as the command
 docker commit -run='{"Cmd":["/bin/bash"], "User":"root"}' <containerID> <tag>

@@ -56,6 +56,7 @@ end
 
 plugin "vagrant-vbguest"
 plugin "facter"
+plugin "vagrant-cachier"
 
 Vagrant.configure("2") do |config|
   # No forwarded ports on this because we've added an actual IP on the private network below
@@ -65,7 +66,9 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, :path => "bootstrap.sh"
 
   config.vm.provider :vbox do |vbox, override|
-    config.vm.network :public_network, bridge: "en0: Wi-Fi (AirPort)"
+    config.cache.scope = :box
+    # XXX At the moment, the network config is getting run twice
+#    config.vm.network :public_network, bridge: "en0: Wi-Fi (AirPort)"
     config.vm.network :private_network, ip: "10.42.42.2"
     config.vm.box = VBOX_NAME
     config.vm.box_url = VBOX_URI
