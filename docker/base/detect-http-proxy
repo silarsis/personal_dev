@@ -1,0 +1,5 @@
+#!/bin/bash
+
+GW=$(/sbin/route -n | grep '^0.0.0.0' | awk '{ print $2 }')
+
+nc -zw1 ${GW} 3142 && echo "http://${GW}:3142/" || echo "DIRECT"
