@@ -12,6 +12,7 @@ RUN_DOCKER="docker run"
 BUILD=0
 PUSH=0
 RUN=0
+QUIET="-q"
 
 veval () {
 	# Verbose eval
@@ -19,7 +20,7 @@ veval () {
 	eval $*
 }
 
-while getopts ":bB:prR:c:h" opt; do
+while getopts ":bB:prR:c:hvf" opt; do
 	case $opt in
 		b)
 			BUILD=1
@@ -36,10 +37,20 @@ while getopts ":bB:prR:c:h" opt; do
 		R)
 			RUN_DOCKER="${RUN_DOCKER} ${OPTARG}"
 			;;
+		v)
+			QUIET=""
+			;;
+		f)
+			echo "`docker ps -a | grep Exit | awk '{ print $1 }' | xargs -r docker rm | wc -l` containers removed"
+			echo "`docker images -a | grep "^<none>" | grep 'day\|week\|month' | awk '{ print $3 }' | xargs -r docker rmi 2>&1 | grep -v Error | wc -l` images removed"
+			exit 0
+			;;
 		h)
-			echo "Usage: ${BASH_SOURCE[0]} [-b] [-p] [-r] [-B '--no-cache'] [ -R '-P'] <container name>"
+			echo "Usage: ${BASH_SOURCE[0]} [-v] [-b] [-p] [-r] [-B '--no-cache'] [ -R '-P'] <container name>"
 			echo "build, push, run"
 			echo "-B and -R let you specify build and run arguments"
+			echo "-v for verbose (switch 'quiet' off)"
+			echo "-f to flush all non-running containers and non-tagged images older than a day"
 			exit 1
 			;;
 	esac
@@ -87,11 +98,11 @@ DIRNAME="/vagrant/docker/${CONTAINER_NAME}"
 
 # Default implementations of each of these
 [ `type -t build` ] || build () {
-	veval ${BUILD_DOCKER} -q --rm -t ${CONTAINER_NAME} ${DIRNAME}
+	veval ${BUILD_DOCKER} ${QUIET} --rm -t ${CONTAINER_NAME} ${DIRNAME}
 	veval docker tag ${CONTAINER_NAME} ${USERNAME}/${CONTAINER_NAME}
 }
 [ `type -t run` ] || run () {
-	veval exec ${RUN_DOCKER} -i -t ${CONTAINER_NAME} ${CMD}
+	veval exec ${RUN_DOCKER} -i -t ${CONTAINER_NAME} -v /var/cache/apt/archives:/var/cache/apt/archives ${CMD}
 }
 [ `type -t push` ] || push () {
 	veval docker tag ${CONTAINER_NAME} ${REGISTRY}/${CONTAINER_NAME}
