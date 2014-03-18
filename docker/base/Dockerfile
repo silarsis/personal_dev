@@ -29,7 +29,4 @@ RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 # Install some stuff I want by default
 RUN apt-get -yq install vim telnet wget
 
-# Quick clean-up to reduce the size of this image
-RUN apt-get clean
-
 CMD ["/bin/bash"]
