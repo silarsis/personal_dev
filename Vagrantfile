@@ -42,7 +42,6 @@ def plugin(name, version = nil, opts = {})
     cmd << " --plugin-source #{opts[:source]}" if opts[:source]
     cmd << " --plugin-version #{version}" if version
     cmd << " #{name}"
-
     result = %x(#{cmd})
   end
 end
@@ -67,9 +66,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :vbox do |vbox, override|
     config.cache.scope = :box
-    # XXX At the moment, the network config is getting run twice
-#    config.vm.network :public_network, bridge: "en0: Wi-Fi (AirPort)"
-    config.vm.network :private_network, ip: "10.42.42.2"
+    # XXX At the moment, the network config is getting run twice,
+    # so the following hacks around that. I don't know why that's happening.
+    #config.vm.network :public_network, bridge: "en0: Wi-Fi (AirPort)"
+    config.vm.network :private_network, ip: "10.42.42.2" unless config.vm.networks.index { |item| item[0] == :private_network }
     config.vm.box = VBOX_NAME
     config.vm.box_url = VBOX_URI
     vbox.name = VBOX_NAME
