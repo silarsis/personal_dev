@@ -11,11 +11,11 @@ wget -q -O - https://get.docker.io/gpg | apt-key add -
 wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
 apt-get update -qq && apt-get -yq upgrade
 # Docker tools
-apt-get install -yq lxc-docker
+apt-get install -yq lxc-docker cgroup-lite
 # Python to support storm, a ssh key manager
 apt-get install -yq python-pip python-dev
 # Things I always want
-apt-get install -yq git less vim wget socat tcpdump netcat
+apt-get install -yq git less vim wget socat tcpdump netcat unzip
 
 # Add user to the docker group, so we don't have to sudo everything.
 # On a local vbox it's vagrant, on AWS it's ubuntu
