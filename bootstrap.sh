@@ -34,7 +34,8 @@ sed -i 's!DOCKER_OPTS=!DOCKER_OPTS="-H tcp://0.0.0.0:4243 -H unix:///var/run/doc
 service restart docker
 
 # Link our script into the path - set your env variable if you want a default config file
-ln -s /vagrant/docker/drun.sh /usr/local/bin/drun
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ln -s ${DIR}/docker/drun.sh /usr/local/bin/drun
 
 DOCKERIP=`/sbin/ifconfig docker0 | grep 'inet addr' | awk 'BEGIN { FS = "[ :]+" } ; { print $4 }'`
 
@@ -53,7 +54,7 @@ sed -i 's/nameserver 127.0.0.1/nameserver ${DOCKERIP}/' /etc/resolv.conf
 pip install stormssh
 
 # Run the registry
-/vagrant/docker/drun.sh -v -r registry
+/usr/local/bin/drun -v -r registry
 
 # ngrok, because it's useful
 wget -q -O - https://dl.ngrok.com/linux_386/ngrok.zip | funzip > /usr/local/bin/ngrok && chmod 755 /usr/local/bin/ngrok
