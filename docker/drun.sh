@@ -14,6 +14,19 @@ PUSH=0
 RUN=0
 QUIET="-q"
 
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  TARGET="$(readlink "$SOURCE")"
+  if [[ $SOURCE == /* ]]; then
+    SOURCE="$TARGET"
+  else
+    SOURCEDIR="$( dirname "$SOURCE" )"
+    SOURCE="$DIR/$TARGET" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+  fi
+done
+RDIR="$( dirname "$SOURCE" )"
+SOURCEDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
 veval () {
 	# Verbose eval
 	echo $*
@@ -91,7 +104,15 @@ CONTAINER_NAME=$1
 shift
 CMD=$@
 
-DIRNAME="/vagrant/docker/${CONTAINER_NAME}"
+# Find the container
+DIRNAME="~/docker/${CONTAINER_NAME}"
+if [ ! -e "${DIRNAME}" ]; then
+	DIRNAME="${SOURCEDIR}/docker/${CONTAINER_NAME}"
+	if [ ! -e "${DIRNAME}" ]; then
+		echo "No docker configuration called '${CONTAINER_NAME}' found"
+		exit 1
+	fi
+fi
 
 # Import any overrides for build, push and run
 [ -e "${DIRNAME}/run.sh" ] && source "${DIRNAME}/run.sh"
