@@ -55,6 +55,10 @@ DOCKER_OPTS="-r=true -H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock --dns 
 EOF
 service docker restart && sleep 1
 
+# Run a cache - mkdir in case we're running on non-vbox and not mapped through
+mkdir -p /var/cache/angry-caching-proxy
+/usr/local/bin/drun angry-caching-proxy
+
 # Run Skydock
 DOCKERIP=$(/sbin/ifconfig docker0 | grep 'inet addr' | awk 'BEGIN { FS = "[ :]+" } ; { print $4 }')
 NS=$(grep nameserver /etc/resolv.conf | cut -d' ' -f2)
@@ -64,7 +68,7 @@ docker pull crosbymichael/skydock
 docker run -d -v /var/run/docker.sock:/docker.sock --name skydock --link skydns:skydns crosbymichael/skydock --ttl 30 --environment dev -s /docker.sock --domain docker
 
 # Run the registry
-/usr/local/bin/drun -v -r registry
+/usr/local/bin/drun registry
 
 # ngrok, because it's useful
 if [ ! -e /usr/local/bin/ngrok ]; then

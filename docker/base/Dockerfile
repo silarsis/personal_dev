@@ -1,6 +1,7 @@
 FROM ubuntu:saucy
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 ENV DEBIAN_FRONTEND noninteractive
+# Support for checking on http_proxy every apt-get
 ADD detect-http-proxy /etc/apt/detect-http-proxy
 ADD s30detectproxy /etc/apt/apt.conf.d/s30detectproxy
 RUN chmod 755 /etc/apt/detect-http-proxy /etc/apt/apt.conf.d/s30detectproxy

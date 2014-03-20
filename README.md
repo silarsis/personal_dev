@@ -54,10 +54,10 @@ USER silarsis
 WORKDIR /home/silarsis
 
 ### Delete all unused containers:
-docker rm $(docker ps -a | grep Exit | awk '{ print $1 }')
+docker ps -a | grep Exit | awk '{ print $1 }' | xargs -r docker rm
 
-### Delete all untagged images days or weeks old:
-docker rmi $(docker images -a | grep "^<none>" | grep 'day\|week' | awk '{ print $3 }')
+### Delete all untagged images days or weeks or months old:
+docker images -a | grep "^<none>" | grep 'day\|week\|month' | awk '{ print $3 }' | xargs -r docker rmi
 
 ### Find the IP of a container:
 docker inspect -format '{{ .NetworkSettings.IPAddress }}' <containerid>

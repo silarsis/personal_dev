@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z "${APTCACHER_PORT_3142_TCP_ADDR}" ]; then
+if [ "x${APTCACHER_PORT_3142_TCP_ADDR}" != "x" ]; then
   if $(nc -zw1 ${APTCACHER_PORT_3142_TCP_ADDR}:${APTCACHER_PORT_3142_TCP_PORT}); then
     echo "http://${APTCACHER_PORT_3142_TCP_ADDR}:${APTCACHER_PORT_3142_TCP_PORT}/"
     exit

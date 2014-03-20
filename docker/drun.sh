@@ -33,7 +33,7 @@ veval () {
 	eval $*
 }
 
-while getopts ":bB:prR:c:hvf" opt; do
+while getopts ":bB:prR:c:hvlf" opt; do
 	case $opt in
 		b)
 			BUILD=1
@@ -52,6 +52,10 @@ while getopts ":bB:prR:c:hvf" opt; do
 			;;
 		v)
 			QUIET=""
+			;;
+		l)
+			[ -d "~/docker" ] && find "~/docker" -maxdepth 1 -type d -exec basename {} \;
+			[ -d "${SOURCEDIR}" ] && find "${SOURCEDIR}" -maxdepth 1 -type d -exec basename {} \;
 			;;
 		f)
 			echo "`docker ps -a | grep Exit | awk '{ print $1 }' | xargs -r docker rm | wc -l` containers removed"
@@ -107,7 +111,7 @@ CMD=$@
 # Find the container
 DIRNAME="~/docker/${CONTAINER_NAME}"
 if [ ! -e "${DIRNAME}" ]; then
-	DIRNAME="${SOURCEDIR}/docker/${CONTAINER_NAME}"
+	DIRNAME="${SOURCEDIR}/${CONTAINER_NAME}"
 	if [ ! -e "${DIRNAME}" ]; then
 		echo "No docker configuration called '${CONTAINER_NAME}' found"
 		exit 1
