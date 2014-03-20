@@ -1,0 +1,12 @@
+if [ "x${APTCACHER_PORT_3142_TCP_ADDR}" != "x" ]; then
+  if $(nc -zw1 ${APTCACHER_PORT_3142_TCP_ADDR}:${APTCACHER_PORT_3142_TCP_PORT}); then
+    export http_proxy="http://${APTCACHER_PORT_3142_TCP_ADDR}:${APTCACHER_PORT_3142_TCP_PORT}/"
+  fi
+else
+  GW=$(/sbin/route -n | grep '^0.0.0.0' | awk '{ print $2 }')
+  if $(nc -zw1 ${GW} 3142); then
+    export http_proxy="http://${GW}:3142/"
+  fi
+fi
+
+echo ${http_proxy}
