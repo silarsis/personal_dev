@@ -4,6 +4,7 @@
 
 USERNAME="silarsis" # Change this for the <username>/<image> tag name
 REGISTRY="localhost:5000" # Change this for a different private registry location
+RUNNING_DRUN=1
 
 set -e
 

@@ -80,7 +80,7 @@ Vagrant.configure("2") do |config|
     # Map a couple of drives through
     config.vm.synced_folder File.expand_path("~"), "/home/vagrant/host_home"
     config.vm.synced_folder File.expand_path("~/.docker_registry"), "/tmp/registry"
-    config.vm.synced_folder File.expand_path("./angry-caching-proxy"), "/var/cache/angry-caching-proxy"
+    config.vm.synced_folder File.expand_path("./squid3"), "/var/spool/squid3"
   end
 
   config.vm.provider :aws do |aws, override|

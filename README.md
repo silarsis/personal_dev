@@ -30,6 +30,18 @@ any of the docker/*/run.sh scripts
 
 ## Snippets that are useful:
 
+### Configure swap on the host - 2Gb
+dd if=/dev/zero of=/swapfile bs=1024 count=2048k
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+echo 10 > /proc/sys/vm/swappiness
+echo 'vm.swappiness = 10' >> /etc/sysctl.conf
+
+### IPTables entry to redirect all docker port 80 requests to a transparent proxy on port 3128
+iptables -t nat -A PREROUTING -i docker0 -p tcp --dport 80 -j REDIRECT --to-port 3128
+
 ### Fake a fuse install
 RUN apt-get install libfuse2
 RUN cd /tmp ; apt-get download fuse
@@ -60,7 +72,7 @@ docker ps -a | grep Exit | awk '{ print $1 }' | xargs -r docker rm
 docker images -a | grep "^<none>" | grep 'day\|week\|month' | awk '{ print $3 }' | xargs -r docker rmi
 
 ### Find the IP of a container:
-docker inspect -format '{{ .NetworkSettings.IPAddress }}' <containerid>
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' <containerid>
 
 ### Register the hostname in /etc/hosts
 if [ ! sed '/\([0-9\.]*\) registry.dev/,${s//'"${IP}"' registry.dev/;b};$q1' /etc/hosts ]; then
