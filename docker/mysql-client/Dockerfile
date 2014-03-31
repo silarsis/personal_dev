@@ -4,5 +4,5 @@ FROM silarsis/base
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
 RUN apt-get -yq install mysql-client
-ADD run.sh /usr/local/bin/run.sh
-CMD ["/usr/local/bin/run.sh"]
+ADD run_client.sh /usr/local/bin/run_client.sh
+CMD ["/usr/local/bin/run_client.sh"]
