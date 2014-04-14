@@ -4,6 +4,11 @@
 
 DEBIAN_FRONTEND=noninteractive
 
+# Disable IPv6
+echo net.ipv6.conf.all.disable_ipv6=1 > /etc/sysctl.d/disableipv6.conf
+sed -i '/::/s/^/#/' /etc/hosts
+sed -i '/ipv6=yes/s/yes/no/' /etc/avahi/avahi-daemon.conf
+
 # Add the lxc-docker package and other requirements
 echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
 wget -q -O - https://get.docker.io/gpg | apt-key add -
