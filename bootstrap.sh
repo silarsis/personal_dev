@@ -9,6 +9,12 @@ echo net.ipv6.conf.all.disable_ipv6=1 > /etc/sysctl.d/disableipv6.conf
 sed -i '/::/s/^/#/' /etc/hosts
 sed -i '/ipv6=yes/s/yes/no/' /etc/avahi/avahi-daemon.conf
 
+# Make DNS sane
+if [ ! $(grep single-request-reopen /etc/resolv.conf) ]; then
+  echo 'options single-request-reopen' > /etc/resolvconf/resolv.conf.d/tail
+  service networking restart
+fi
+
 # Add the lxc-docker package and other requirements
 echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
 wget -q -O - https://get.docker.io/gpg | apt-key add -
@@ -29,7 +35,7 @@ apt-get install -yq git less vim wget socat tcpdump netcat unzip
 pip install stormssh
 
 # Install fig, latest version to get 'privileged' support
-mkdir -p /tmp/git && cd /tmp/git && git clone https://github.com/orchardup/fig.git && cd fig && python setup.py install && rm -rf /tmp/git
+mkdir -p /tmp/git && pushd /tmp/git && git clone https://github.com/orchardup/fig.git && cd fig && python setup.py install && rm -rf /tmp/git && popd
 #pip install fig
 
 # Install docker-api for our provisioning script
@@ -55,16 +61,16 @@ cat << EOF > /etc/default/docker
 
 # This is also a handy place to tweak where Docker's temporary files go.
 #export TMPDIR="/mnt/bigdrive/docker-tmp"
-DOCKER_OPTS="-r=true -H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock"
+DOCKER_OPTS="-H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock"
 EOF
 service docker restart && sleep 1
 
 # Run a cache - mkdir in case we're running on non-vbox and not mapped through
 ln -s /var/spool/squid3 /tmp/squid3 # This should be a param to run.sh
-mkdir -p /vagrant/proxy && cd /vagrant/proxy && wget https://github.com/silarsis/docker-proxy/archive/master.zip && unzip master.zip && cd docker-proxy-master && ./run.sh &
+#mkdir -p /vagrant/proxy && cd /vagrant/proxy && wget https://github.com/silarsis/docker-proxy/archive/master.zip && unzip master.zip && cd docker-proxy-master && ./run.sh
 
 # Run the registry
-/usr/local/bin/drun registry
+#/usr/local/bin/drun registry
 
 # ngrok, because it's useful
 if [ ! -e /usr/local/bin/ngrok ]; then
