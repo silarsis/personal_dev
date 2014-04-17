@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "docker"
   config.vm.provision :shell, :path => "bootstrap.sh"
 
-  config.vm.provider :vbox do |vbox, override|
+  config.vm.provider 'virtualbox' do |vbox|
     #config.cache.scope = :box
     # XXX At the moment, the network config is getting run twice,
     # so the following hacks around that. I don't know why that's happening.
@@ -73,9 +73,13 @@ Vagrant.configure("2") do |config|
     config.vm.box = VBOX_NAME
     config.vm.box_url = VBOX_URI
     vbox.name = VBOX_NAME
+    vbox.gui = true
+    # Disable DNS NAT to fix performance issues
+    vbox.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
+    vbox.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
     # Using Facter to give us a machine with a quarter the memory and half the cpus of host
-    vbox.customize ["modifyvm", :id, "--memory", [Facter.memorysize_mb.to_i/4, 512].max]
-    vbox.customize ["modifyvm", :id, "--cpus", [Facter.processorcount.to_i/2, 1].max]
+    vbox.memory = [Facter.memorysize_mb.to_i/4, 512].max
+    vbox.cpus = [Facter.processorcount.to_i/2, 1].max
     vbox.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
     # Map a couple of drives through
     config.vm.synced_folder File.expand_path("~"), "/home/vagrant/host_home"
