@@ -73,14 +73,14 @@ Vagrant.configure("2") do |config|
     config.vm.box = VBOX_NAME
     config.vm.box_url = VBOX_URI
     vbox.name = VBOX_NAME
-    vbox.gui = true
+    #vbox.gui = true
     # Disable DNS NAT to fix performance issues
-    vbox.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
+    vbox.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
     vbox.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
     # Using Facter to give us a machine with a quarter the memory and half the cpus of host
     vbox.memory = [Facter.memorysize_mb.to_i/4, 512].max
     vbox.cpus = [Facter.processorcount.to_i/2, 1].max
-    vbox.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
+    #vbox.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
     # Map a couple of drives through
     config.vm.synced_folder File.expand_path("~"), "/home/vagrant/host_home"
     config.vm.synced_folder File.expand_path("~/.docker_registry"), "/tmp/registry"
