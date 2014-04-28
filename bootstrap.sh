@@ -24,7 +24,7 @@ apt-get install -yq lxc-docker cgroup-lite
 # Python to support storm, a ssh key manager
 apt-get install -yq python-pip python-dev
 # Things I always want
-apt-get install -yq git less vim wget socat tcpdump netcat unzip
+apt-get install -yq git less vim wget socat tcpdump netcat unzip telnet
 
 # Add user to the docker group, so we don't have to sudo everything.
 # On a local vbox it's vagrant, on AWS it's ubuntu
@@ -40,6 +40,7 @@ mkdir -p /tmp/git && pushd /tmp/git && git clone https://github.com/orchardup/fi
 
 # Install docker-api for our provisioning script
 apt-get install -yq ruby-dev
+gem install bundler
 gem install docker-api
 
 # Link our script into the path
@@ -80,7 +81,7 @@ fi
 # Useful aliases
 cat << EOF > /etc/profile.d/docker.sh
 docker_run_shell () {
-  docker run -i -t $1 /bin/bash
+  docker run -i -t \$1 /bin/bash
 }
 alias dsh=docker_run_shell
 EOF
