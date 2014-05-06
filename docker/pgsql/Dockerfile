@@ -1,6 +1,5 @@
 FROM centos
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
-ENV http_proxy http://172.17.42.1:3142
 RUN echo 'NETWORKING=yes' > /etc/sysconfig/network
 
 # Install Postgresql
