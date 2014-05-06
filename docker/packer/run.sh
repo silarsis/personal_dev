@@ -2,7 +2,7 @@
 
 run () {
 	[ -e ${DIRNAME}/id_rsa ] || ssh-keygen -f ${DIRNAME}/id_rsa -N ""
-	CID=$(${RUN_DOCKER} -d ${CONTAINER_NAME ${CMD}})
+	CID=$(${RUN_DOCKER} -d ${CONTAINER_NAME} ${CMD})
 	IP=$(docker inspect -format '{{ .NetworkSettings.IPAddress }}' ${CID})
 	IFS='.' read -ra ADDR <<< "$IP"
 	NAME="ssh${ADDR[3]}"

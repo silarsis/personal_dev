@@ -4,6 +4,7 @@
 
 USERNAME="silarsis" # Change this for the <username>/<image> tag name
 REGISTRY="localhost:5000" # Change this for a different private registry location
+RUNNING_DRUN=1
 
 set -e
 
@@ -50,6 +51,9 @@ while getopts ":bB:prR:c:hvlf" opt; do
 		R)
 			RUN_DOCKER="${RUN_DOCKER} ${OPTARG}"
 			;;
+    y)
+      REGISTRY="${OPTARG}"
+      ;;
 		v)
 			QUIET=""
 			;;
@@ -62,9 +66,10 @@ while getopts ":bB:prR:c:hvlf" opt; do
 			exit 0
 			;;
 		h)
-			echo "Usage: ${BASH_SOURCE[0]} [-v] [-b] [-p] [-r] [-B '--no-cache'] [ -R '-P'] <container name>"
+			echo "Usage: ${BASH_SOURCE[0]} [-v] [-b] [-p] [-r] [-y] [-B '--no-cache'] [ -R '-P'] <container name>"
 			echo "build, push, run"
 			echo "-B and -R let you specify build and run arguments"
+      echo "-y lets you specify a new REGISTRY, for push"
 			echo "-v for verbose (switch 'quiet' off)"
 			echo "-f to flush all non-running containers and non-tagged images older than a day"
 			exit 1

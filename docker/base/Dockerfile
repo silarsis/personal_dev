@@ -31,7 +31,7 @@ RUN dpkg-divert --local --rename --add /sbin/initctl && rm -f /sbin/initctl && l
 RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 
 # Install some stuff I want by default
-RUN apt-get -yq install vim telnet wget
+RUN apt-get -yq install git less vim wget socat tcpdump netcat unzip telnet
 
 # Quick clean-up to reduce the size of this image
 RUN apt-get clean
