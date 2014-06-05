@@ -1,17 +1,14 @@
 FROM ubuntu:saucy
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
-ENV DEBIAN_FRONTEND noninteractive
-# Support for checking on http_proxy every apt-get
-ADD detect-http-proxy /etc/apt/detect-http-proxy
-ADD s30detectproxy /etc/apt/apt.conf.d/s30detectproxy
-RUN chmod 755 /etc/apt/detect-http-proxy /etc/apt/apt.conf.d/s30detectproxy
-RUN apt-get -yq update && apt-get -yq upgrade
 
-# Strange little bug in /tmp permissions
-RUN chmod go+w,u+s /tmp
+# Fix the locale
+RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
+
+# apt-get update because we _do_ need it :(
+RUN apt-get -yq update
 
 # Fake a fuse install
-RUN apt-get install libfuse2
+RUN apt-get install -yq apt-utils adduser libfuse2
 RUN mkdir /tmp/fuse && \
 	cd /tmp/fuse && \
 	apt-get download fuse && \
@@ -26,9 +23,6 @@ RUN mkdir /tmp/fuse && \
 
 # Fix initctl, in case it hasn't been fixed already
 RUN dpkg-divert --local --rename --add /sbin/initctl && rm -f /sbin/initctl && ln -s /bin/true /sbin/initctl
-
-# Fix the locale
-RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 
 # Install some stuff I want by default
 RUN apt-get -yq install git less vim wget socat tcpdump netcat unzip telnet
