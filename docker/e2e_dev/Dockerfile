@@ -1,9 +1,9 @@
 # https://code.google.com/p/end-to-end/wiki/BuildInstructions?tm=6
 
-FROM debian
+FROM silarsis/base
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
-RUN apt-get install git vim less svn
+RUN apt-get install -yq git vim less subversion curl
 VOLUME /opt/e2e_dev
 WORKDIR /opt/e2e_dev
 # Code
