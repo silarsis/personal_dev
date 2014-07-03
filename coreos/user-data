@@ -2,10 +2,12 @@
 
 coreos:
   etcd:
-      #generate a new token for each unique cluster from https://discovery.etcd.io/new
-      discovery: https://discovery.etcd.io/484640a376702617589a39860a281115
-      addr: $public_ipv4:4001
-      peer-addr: $public_ipv4:7001
+      discovery: https://discovery.etcd.io/149769fa7a3a896893f2f4f2afee5ef4
+      addr: $private_ipv4:4001
+      peer-addr: $private_ipv4:7001
+  update:
+      reboot-strategy: best-effort
+      group: alpha
   units:
     - name: etcd.service
       command: start
@@ -21,6 +23,7 @@ coreos:
         ExecStart=/usr/bin/fleet
     - name: docker-tcp.socket
       command: start
+      runtime: true
       content: |
         [Unit]
         Description=Docker Socket for the API
@@ -34,18 +37,26 @@ coreos:
         WantedBy=sockets.target
     - name: enable-docker-tcp.service
       command: start
+      runtime: true
       content: |
         [Unit]
-        Description=Enable the Docker socket for the API
+        Description=Enable the Docker Socket for the API
+        After=docker.service
 
         [Service]
         Type=oneshot
         ExecStart=/usr/bin/systemctl enable docker-tcp.socket
+        ExecStartPost=/usr/bin/systemctl stop docker.socket docker
+        ExecStartPost=/usr/bin/systemctl start docker-tcp.socket docker.socket
+        ExecStartPost=/usr/bin/systemctl start docker
+
+        [Install]
+        WantedBy=multi-user.target
     - name: docker.service
       command: restart
       content: |
         [Unit]
-        Description=Docker Application Container Engine 
+        Description=Docker Application Container Engine
         Documentation=http://docs.docker.io
         After=network.target
 
@@ -58,3 +69,14 @@ coreos:
 
         [Install]
         WantedBy=multi-user.target
+    - name: fleet.service
+      command: start
+      runtime: true
+      content: |
+        [Unit]
+        Description=fleet
+
+        [Service]
+        Restart=always
+        Environment=FLEET_PUBLIC_IP=$private_ipv4
+        ExecStart=/usr/bin/fleet

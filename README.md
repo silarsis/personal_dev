@@ -83,9 +83,9 @@ WORKDIR /home/silarsis
 docker ps -a | grep Exit | awk '{ print $1 }' | xargs -r docker rm
 ```
 
-### Delete all untagged images days or weeks or months old:
+### Delete all untagger dangling images:
 ```
-docker images -a | grep "^<none>" | grep 'day\|week\|month' | awk '{ print $3 }' | xargs -r docker rmi
+docker rmi $(docker images -f "dangling=true" -q)
 ```
 
 ### Find the IP of a container:
