@@ -1,0 +1,60 @@
+#cloud-config
+
+coreos:
+  etcd:
+      #generate a new token for each unique cluster from https://discovery.etcd.io/new
+      discovery: https://discovery.etcd.io/484640a376702617589a39860a281115
+      addr: $public_ipv4:4001
+      peer-addr: $public_ipv4:7001
+  units:
+    - name: etcd.service
+      command: start
+    - name: fleet.service
+      command: start
+      runtime: no
+      content: |
+        [Unit]
+        Description=fleet
+
+        [Service]
+        Environment=FLEET_PUBLIC_IP=$public_ipv4
+        ExecStart=/usr/bin/fleet
+    - name: docker-tcp.socket
+      command: start
+      content: |
+        [Unit]
+        Description=Docker Socket for the API
+
+        [Socket]
+        ListenStream=4243
+        Service=docker.service
+        BindIPv6Only=both
+
+        [Install]
+        WantedBy=sockets.target
+    - name: enable-docker-tcp.service
+      command: start
+      content: |
+        [Unit]
+        Description=Enable the Docker socket for the API
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/systemctl enable docker-tcp.socket
+    - name: docker.service
+      command: restart
+      content: |
+        [Unit]
+        Description=Docker Application Container Engine 
+        Documentation=http://docs.docker.io
+        After=network.target
+
+        [Service]
+        Environment="HTTP_PROXY=http://172.17.8.1:8080"
+        ExecStartPre=/bin/mount --make-rprivate /
+        # Run docker but don't have docker automatically restart
+        # containers. This is a job for systemd and unit files.
+        ExecStart=/usr/bin/docker -d -s=btrfs -r=false -H fd://
+
+        [Install]
+        WantedBy=multi-user.target

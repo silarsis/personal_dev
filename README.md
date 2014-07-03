@@ -113,3 +113,17 @@ ENV LD_LIBRARY_PATH /lib-override
 ```
 docker commit -run='{"Cmd":["/bin/bash"], "User":"root"}' <containerID> <tag>
 ```
+
+### Increase the size of the coreos filesystem
+
+Find the vmdk (start virtualbox ui, right click on vm and "show in finder"
+```
+VBoxManage showhdinfo <filename>
+```
+Get the UUID from the error you see from the above command, then:
+```
+VBoxManage clonehd --format VDI <uuid> <newfilename.vdi>
+VBoxManage modifyhd <newfilename.vdi> --resize 81920
+```
+
+Go into VirtualBox, settings for the vm, storage, remove the existing drive and add the new one.

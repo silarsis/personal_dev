@@ -10,44 +10,34 @@ install_mosh() {
     echo "say yes twice"
     cpan IO::Pty
     curl -O "http://protobuf.googlecode.com/files/protobuf-2.4.1.tar.gz"
-    tar -xzf protobuf-2.4.1.tar.gz 
+    tar -xzf protobuf-2.4.1.tar.gz
     pushd protobuf-2.4.1
-    ./configure 
+    ./configure
     make && make install
     echo "/usr/local/lib" >> /etc/ld.so.conf.d/usr_local_lib.conf
     popd
     git clone https://github.com/keithw/mosh
     cd mosh
-    ./autogen.sh 
+    ./autogen.sh
     ./configure PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
     make && make install
-}
-
-mount_data_drive() {
-    parted /dev/sdb mklabel msdos
-    parted /dev/sdb mkpart primary 512 100%
-    apt-get -yq install btrfs.tools
-    mkfs.btrfs /dev/sdb1
-    mkdir /mnt/data
-    echo `blkid /dev/sdb1 | awk '{print$2}' | sed -e 's/"//g'` /mnt/data   btrfs   defaults   0   0 >> /etc/fstab
-    mount /mnt/data
 }
 
 disable_ipv6() {
     echo net.ipv6.conf.all.disable_ipv6=1 > /etc/sysctl.d/disableipv6.conf
     sed -i '/::/s/^/#/' /etc/hosts
-    sed -i '/ipv6=yes/s/yes/no/' /etc/avahi/avahi-daemon.conf
+    [ -e /etc/avahi/avahi-daemon.conf ] && sed -i '/ipv6=yes/s/yes/no/' /etc/avahi/avahi-daemon.conf
 }
 
 fix_dns_on_virtualbox() {
-  if [ ! $(grep single-request-reopen /etc/resolv.conf) ]; then
-    echo 'options single-request-reopen' > /etc/resolvconf/resolv.conf.d/tail
-    service networking restart
-  fi
+  echo 'options single-request-reopen' > /etc/resolvconf/resolv.conf.d/tail
+  service networking restart
 }
 
-# Fix the docker conf to listen on the static interface
 configure_docker() {
+  apt-get install -yq lxc-docker cgroup-lite
+  service docker stop
+  mv /var/lib/docker /mnt/data/docker
   cat << EOF > /etc/default/docker
 # Docker Upstart and SysVinit configuration file
 
@@ -62,9 +52,9 @@ configure_docker() {
 
 # This is also a handy place to tweak where Docker's temporary files go.
 export TMPDIR="/mnt/data/docker-tmp"
-DOCKER_OPTS="-H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock -g /mnt/data/docker"
+DOCKER_OPTS="-H tcp://0.0.0.0:4243 -g /mnt/data/docker"
 EOF
-  service docker start
+  service docker restart
 }
 
 # Add the lxc-docker package and other requirements
@@ -72,10 +62,6 @@ add_required_packages() {
   echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
   wget -q -O - https://get.docker.io/gpg | apt-key add -
   apt-get update -yqq && apt-get -yq upgrade
-  # Docker tools
-  apt-get install -yq lxc-docker cgroup-lite
-  service docker stop
-  mv /var/lib/docker /mnt/data/docker
   configure_docker
   # Python to support storm, a ssh key manager
   apt-get install -yq python-pip python-dev
@@ -87,7 +73,6 @@ add_required_packages() {
 
 disable_ipv6
 fix_dns_on_virtualbox
-mount_data_drive
 add_required_packages
 
 # Add user to the docker group, so we don't have to sudo everything.
