@@ -1,0 +1,6 @@
+alias list="credulous list"
+alias save="credulous save"
+alias source="credulous source"
+alias current="credulous current"
+alias display="credulous display"
+alias help="credulous help"
