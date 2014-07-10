@@ -127,3 +127,7 @@ VBoxManage modifyhd <newfilename.vdi> --resize 81920
 ```
 
 Go into VirtualBox, settings for the vm, storage, remove the existing drive and add the new one.
+
+### Location of OS X docker binary
+
+http://get.docker.io/builds/Darwin/x86_64/docker-$version.tgz
