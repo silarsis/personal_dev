@@ -61,7 +61,7 @@ coreos:
         After=network.target
 
         [Service]
-        Environment="HTTP_PROXY=http://172.17.8.1:8080"
+        #Environment="HTTP_PROXY=http://172.17.8.1:8080"
         ExecStartPre=/bin/mount --make-rprivate /
         # Run docker but don't have docker automatically restart
         # containers. This is a job for systemd and unit files.

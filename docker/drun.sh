@@ -34,8 +34,12 @@ veval () {
 	eval $*
 }
 
-while getopts ":bB:prR:c:hvlf" opt; do
+while getopts ":sbB:prR:c:hvlf" opt; do
 	case $opt in
+        s)
+            echo ${SOURCEDIR}
+            exit
+            ;;
 		b)
 			BUILD=1
 			;;
