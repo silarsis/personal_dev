@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source /etc/profile.d/rvm.sh
+rvm rvmrc warning ignore all.rvmrcs
+rvm use 2.1.1
+export rvm_trust_rvmrcs_flag=1
+source /etc/bash_completion
