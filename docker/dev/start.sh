@@ -18,7 +18,7 @@ grep -v ":${MY_GID}:" /etc/group > /tmp/group && mv /tmp/group /etc/group
 echo "silarsis:x:${MY_UID}:${MY_GID}:,,,:/home/silarsis:/bin/bash" >> /etc/passwd
 echo "silarsis:x:${MY_GID}:" >> /etc/group
 cd /home/silarsis
-find . -xdev -uid ${OLD_UID} | xargs chown silarsis
-find . -xdev -gid ${OLD_GID} | xargs chgrp silarsis
+find . -xdev -print0 -uid ${OLD_UID} | xargs -0 chown silarsis
+find . -xdev -print0 -gid ${OLD_GID} | xargs -0 chgrp silarsis
 umask ${MY_UMASK}
 su -l silarsis

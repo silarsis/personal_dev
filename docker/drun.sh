@@ -150,3 +150,4 @@ fi
 [ ${BUILD} -eq 1 ] && { (( ${QUIET} == 0 )) && echo "Building..."; build; }
 [ ${PUSH} -eq 1 ] && { (( ${QUIET} == 0 )) && echo "Pushing..."; push; }
 [ ${RUN} -eq 1 ] && { (( ${QUIET} == 0 )) && echo "Running..."; run; }
+exit 0
