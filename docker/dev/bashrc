@@ -1,5 +1,0 @@
-#!/bin/bash
-
-source /etc/profile.d/rvm.sh
-source /etc/bash_completion
-export PS1="\[\033[0;31m\][Ruby-Dev-Docker]\[\033[0m\]:\u:\w\$ "
