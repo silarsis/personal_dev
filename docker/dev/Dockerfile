@@ -1,5 +1,5 @@
 FROM credulous
-RUN apt-get -yq install git less vim sudo strace
+RUN apt-get -yq install git less vim sudo strace make
 RUN adduser --gecos '' --disabled-password silarsis
 RUN echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
 USER silarsis
