@@ -7,5 +7,5 @@ build () {
 }
 
 run () {
-    ${RUN_DOCKER} -it -v /home/core/share:/home/silarsis/share -v /home/core/share/.credulous:/home/silarsis/.credulous -v /home/core/share/.ssh:/home/silarsis/.ssh -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/local/bin/docker ${CONTAINER_NAME} ${CMD}
+    ${RUN_DOCKER} -it -v ~:/home/silarsis/share -v ~/.credulous:/home/silarsis/.credulous -v ~/.ssh:/home/silarsis/.ssh -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/local/bin/docker ${CONTAINER_NAME} ${CMD}
 }

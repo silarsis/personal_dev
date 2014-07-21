@@ -9,7 +9,7 @@ RUN git config --global color.ui auto && git config --global user.email "kevin@l
 USER root
 
 # Ruby, needed for hub
-RUN \curl -sSL https://get.rvm.io | bash -s stable
+RUN curl -sSL https://get.rvm.io | bash -s stable
 RUN /bin/bash -l -c "rvm requirements"
 RUN /bin/bash -l -c "rvm install 2.1"
 RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
