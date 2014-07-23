@@ -1,2 +1,2 @@
 #!/bin/bash
-(( $# == 0 )) && exec /bin/bash || exec /bin/bash -c "$@"
+exec ssh-agent tmux

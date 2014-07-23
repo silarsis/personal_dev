@@ -23,5 +23,4 @@ ln -s /Users/silarsis/dius /home/silarsis/dius
 find . -xdev -print0 -uid ${OLD_UID} | xargs -0 chown silarsis
 find . -xdev -print0 -gid ${OLD_GID} | xargs -0 chgrp silarsis
 umask ${MY_UMASK}
-[[ "$@" == "/bin/sh -c /bin/bash" ]] && CMD="" || CMD="$@"
-exec su -l -s /usr/local/bin/user_start.sh silarsis ${CMD}
+exec su -l -s /usr/local/bin/user_start.sh silarsis
