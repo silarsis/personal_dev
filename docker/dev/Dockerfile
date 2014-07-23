@@ -24,7 +24,7 @@ ADD start.sh /usr/local/bin/start.sh
 ADD user_start.sh /usr/local/bin/user_start.sh
 ADD container_name /usr/local/etc/container_name
 
-#RUN cd /tmp && git clone git://github.com/github/hub.git && cd hub && rake install
+RUN cd /tmp && git clone git://github.com/github/hub.git && cd hub && /bin/bash -l -c "rake standalone" && cp ./hub /usr/local/bin
 RUN echo 'export PS1="\[\033[0;31m\][`cat /usr/local/etc/container_name`]\[\033[0m\]:\u:\w\$ "' >> /home/silarsis/.bashrc
 ENTRYPOINT ["/usr/local/bin/start.sh"]
 
