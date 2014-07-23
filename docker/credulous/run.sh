@@ -1,5 +1,5 @@
 #!/bin/bash
 
 run() {
-    veval ${RUN_DOCKER} -i -t --rm -v ~/.credulous:/root/.credulous -v ~/.ssh:/root/.ssh ${CONTAINER_NAME} ${CMD}
+    veval ${RUN_DOCKER} -i -t --rm -v $HOME/.credulous:/root/.credulous -v $HOME/.ssh:/root/.ssh -v $HOME:$HOME ${CONTAINER_NAME} ${CMD}
 }
