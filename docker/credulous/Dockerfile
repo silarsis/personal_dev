@@ -9,7 +9,7 @@ RUN dpkg -i /tmp/credulous*.deb ||:
 RUN apt-get -fyq install
 
 ENV HOME /root
-ADD bashrc /root/.bashrc
+ADD bashrc /etc/profile.d/credulous_aliases.sh
 RUN apt-get install -yq vim less ssh
 RUN mkdir -p /root/.ssh
 
