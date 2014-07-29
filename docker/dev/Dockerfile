@@ -1,6 +1,6 @@
 FROM credulous
 # Stuff I always want
-RUN apt-get -yq install git less vim sudo strace lsof tmux make
+RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump
 RUN adduser --gecos '' --disabled-password silarsis
 RUN echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
 ADD https://get.docker.io/builds/Linux/x86_64/docker-latest /usr/local/bin/docker
