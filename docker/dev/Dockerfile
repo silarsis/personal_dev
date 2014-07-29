@@ -14,11 +14,21 @@ USER root
 # Ruby, needed for hub
 RUN curl -sSL https://get.rvm.io | bash -s stable
 RUN /bin/bash -l -c "rvm requirements"
+RUN /bin/bash -l -c "rvm install 2.0"
 RUN /bin/bash -l -c "rvm install 2.1"
 RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
 RUN usermod -G rvm silarsis
 
+# Python, for fig
+ADD https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz /usr/local/src/
+RUN cd /usr/local/src && tar zxf Python*.tgz
+WORKDIR /usr/local/src/Python-2.7.8
+RUN ./configure && make && make install
+RUN cd /tmp && curl -O https://bootstrap.pypa.io/get-pip.py && python /tmp/get-pip.py
+RUN pip install fig
+
 # Local scripts for configuration
+ADD drun.sh /etc/profile.d/drun.sh
 ADD tmux.conf /etc/tmux.conf
 ADD start.sh /usr/local/bin/start.sh
 ADD user_start.sh /usr/local/bin/user_start.sh
