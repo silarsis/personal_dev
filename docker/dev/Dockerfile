@@ -1,6 +1,6 @@
 FROM credulous
 # Stuff I always want
-RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump
+RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat telnet
 RUN adduser --gecos '' --disabled-password silarsis
 RUN echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
 ADD https://get.docker.io/builds/Linux/x86_64/docker-latest /usr/local/bin/docker
@@ -10,13 +10,17 @@ ENV HOME /home/silarsis
 ENV CONTAINER_NAME Dev-Docker
 RUN git config --global color.ui auto && git config --global user.email "kevin@littlejohn.id.au" && git config --global user.name "Kevin Littlejohn"
 USER root
+RUN apt-get install -yq libxml2-dev libxslt1-dev
 
 # Ruby, needed for hub
 RUN curl -sSL https://get.rvm.io | bash -s stable
 RUN /bin/bash -l -c "rvm requirements"
 RUN /bin/bash -l -c "rvm install 2.0"
 RUN /bin/bash -l -c "rvm install 2.1"
+RUN /bin/bash -l -c "rvm install 2.1.1"
 RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
+RUN /bin/bash -l -c "gem source -a http://rea-rubygems/"
+RUN /bin/bash -l -c "gem install rea-ec2"
 RUN usermod -G rvm silarsis
 
 # Python, for fig
