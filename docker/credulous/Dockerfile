@@ -1,5 +1,6 @@
-FROM google/golang
+FROM ubuntu:trusty
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
+RUN apt-get -yq update && apt-get -yq upgrade
 
 ADD https://github.com/realestate-com-au/credulous/releases/download/0.2.1/credulous_0.2.1.131_amd64.deb /tmp/
 
