@@ -22,8 +22,6 @@ RUN /bin/bash -l -c "rvm install 2.0"
 RUN /bin/bash -l -c "rvm install 2.1"
 RUN /bin/bash -l -c "rvm install 2.1.1"
 RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
-RUN /bin/bash -l -c "gem source -a http://rubygems.delivery.realestate.com.au/"
-RUN /bin/bash -l -c "gem install rea-ec2"
 RUN usermod -G rvm silarsis
 
 # Python, for fig
@@ -33,6 +31,8 @@ WORKDIR /usr/local/src/Python-2.7.8
 RUN ./configure && make && make install
 RUN cd /tmp && curl -O https://bootstrap.pypa.io/get-pip.py && python /tmp/get-pip.py
 RUN pip install fig
+RUN pip install awscli
+ENV AWS_CLI /usr/local/bin/aws
 
 # Local scripts for configuration
 ADD drun.sh /etc/profile.d/drun.sh

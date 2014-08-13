@@ -22,5 +22,5 @@ $expose_docker_tcp=4243
 
 # Setting for VirtualBox VMs
 $vb_gui = false
-$vb_memory = 4096
-$vb_cpus = 1
+$vb_memory = 8192
+$vb_cpus = 2
