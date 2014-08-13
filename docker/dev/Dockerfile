@@ -10,7 +10,8 @@ ENV HOME /home/silarsis
 ENV CONTAINER_NAME Dev-Docker
 RUN git config --global color.ui auto \
   && git config --global user.email "kevin@littlejohn.id.au" \
-  && git config --global user.name "Kevin Littlejohn"
+  && git config --global user.name "Kevin Littlejohn" \
+  && git config --global push.default simple
 USER root
 RUN apt-get install -yq libxml2-dev libxslt1-dev
 
@@ -21,7 +22,7 @@ RUN /bin/bash -l -c "rvm install 2.0"
 RUN /bin/bash -l -c "rvm install 2.1"
 RUN /bin/bash -l -c "rvm install 2.1.1"
 RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
-RUN /bin/bash -l -c "gem source -a http://rea-rubygems/"
+RUN /bin/bash -l -c "gem source -a http://rubygems.delivery.realestate.com.au/"
 RUN /bin/bash -l -c "gem install rea-ec2"
 RUN usermod -G rvm silarsis
 
