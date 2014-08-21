@@ -26,7 +26,7 @@ check_expired() {
   local remain=$(( EXPIRE - now ))
   if [ -n "$EXPIRETIME" ] && [ $remain -lt 0 ]; then
     echo "aws session has expired, unsetting creds and expire"
-    unset EXPIRE EXPIRETIME AWS_ROLE AWS_ACCOUNT AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SECURITY_TOKEN SAML_RESPONSE
+    aws_logout
   else
     if [ -n "$AWS_DEBUG" ]; then
         echo "$remain seconds remain for credential expiration"
@@ -111,8 +111,13 @@ saml_auth() {
   # idphost = your idp hostname
   local default_idphost="idp.realestate.com.au"
 
-  echo -n "idp host [$default_idphost]: "
-  read host
+  if [ -n "$IDP_HOST" ]; then
+    default_idphost=$IDP_HOST
+    echo "authenticating to \$IDP_HOST: $IDP_HOST"
+  else
+    echo -n "idp host [$default_idphost]: "
+    read host
+  fi
 
   if [ -z $host ]; then
     idphost=$default_idphost
@@ -191,9 +196,11 @@ extract_creds() {
     export AWS_ACCESS_KEY_ID=$( echo $CREDS | jq -r '.AccessKeyId' )
     export AWS_SECRET_ACCESS_KEY=$( echo $CREDS | jq -r '.SecretAccessKey' )
     export AWS_SECURITY_TOKEN=$( echo $CREDS | jq -r '.SessionToken' )
+    export AWS_SESSION_TOKEN=$AWS_SECURITY_TOKEN
     export EXPIRETIME=$( echo $CREDS | jq -r '.Expiration' )
-    if [[ "$ROLE_ARN" =~ ([0-9]+).*.role\/(.*) ]]; then
-        export AWS_ROLE=${BASH_REMATCH[2]}
+    if [[ "$ROLE_ARN" =~ ([0-9]+).*.role\/(.*)\/(.*) ]]; then
+        export AWS_ROLE_SESSION_NAME="${BASH_REMATCH[2]}/${BASH_REMATCH[3]}"
+	      export AWS_ROLE=${BASH_REMATCH[2]}
         export AWS_ACCOUNT=${BASH_REMATCH[1]}
     else
         echo "Can't match role ARN from returned credentials"
@@ -247,4 +254,12 @@ session() {
   if [ -n "$EXPIRE" ]; then
     echo -e "current aws session expires $EXPIRETIME, for account $AWS_ACCOUNT and role $AWS_ROLE"
 fi
+}
+
+aws_logout() {
+   unset AWS_SECRET_ACCESS_KEY
+   unset AWS_ACCESS_KEY_ID
+   unset AWS_ACCOUNT
+   unset AWS_SECURITY_TOKEN AWS_SESSION_TOKEN
+   unset AWS_ROLES AWS_ROLE AWS_ROLE_SESSION_NAME
 }

@@ -10,9 +10,6 @@ RUN apt-get install -yq jq
 RUN apt-get install -yq curl
 RUN apt-get install -yq uuid-runtime
 
-ENV AWS_CLI /usr/local/bin/aws
-ENV AWS_USER kevin.littlejohn
-
 # Local additions
 ADD bash-functions /etc/profile.d/saml.sh
 ADD authenticate_or_die.sh /usr/local/bin/authenticate_or_die.sh
