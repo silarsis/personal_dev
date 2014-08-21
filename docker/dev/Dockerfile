@@ -1,6 +1,6 @@
 FROM credulous
 # Stuff I always want
-RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat telnet curl
+RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat telnet curl dnsutils
 RUN adduser --gecos '' --disabled-password silarsis
 RUN echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
 ADD https://get.docker.io/builds/Linux/x86_64/docker-latest /usr/local/bin/docker
@@ -24,7 +24,7 @@ RUN /bin/bash -l -c "rvm install 2.1.1"
 RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
 RUN usermod -G rvm silarsis
 
-# Python, for fig
+# Python, for fig and the AWS CLI
 ADD https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz /usr/local/src/
 RUN cd /usr/local/src && tar zxf Python*.tgz
 WORKDIR /usr/local/src/Python-2.7.8
@@ -32,7 +32,13 @@ RUN ./configure && make && make install
 RUN cd /tmp && curl -O https://bootstrap.pypa.io/get-pip.py && python /tmp/get-pip.py
 RUN pip install fig
 RUN pip install awscli
-ENV AWS_CLI /usr/local/bin/aws
+
+# Keybase, for gpg
+RUN curl -sL https://deb.nodesource.com/setup | bash -
+RUN apt-get -yq install gnupg
+RUN apt-get -yq install nodejs
+RUN npm install -g keybase-installer
+RUN keybase-installer
 
 # Local scripts for configuration
 ADD drun.sh /etc/profile.d/drun.sh
