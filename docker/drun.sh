@@ -64,7 +64,7 @@ while getopts ":sbB:prR:c:hvlfq" opt; do
             QUIET=1
             ;;
         l)
-            find ~/docker/ "${SOURCEDIR}" -maxdepth 1 -type d -exec basename {} \; | grep -v '^\docker$'
+            find -L ~/docker/ "${SOURCEDIR}" -maxdepth 1 -type d -exec basename {} \; | grep -v '^\docker$' | sort | uniq
             ;;
         f)
             # Relies on not being able to remove running containers
@@ -94,9 +94,9 @@ sshConfig () {
     containerIP "${CID}"
     IFS='.' read -ra ADDR <<< "$IP"
     NAME="ssh${ADDR[3]}"
-    if [ $(which storm) ]; then
-        [ "$(storm search "${NAME}")" != "no results found." ] && storm delete ${NAME}
-        storm add --id_file ${DIRNAME}/id_rsa ${NAME} root@${IP} --o "StrictHostKeyChecking=no" --o "UserKnownHostsFile=/dev/null"
+    if [ "$(which storm)" ]; then
+        [ "$(storm search "${NAME}")" != "no results found." ] && storm delete "${NAME}"
+        storm add --id_file "${DIRNAME}"/id_rsa "${NAME}" root@"${IP}" --o "StrictHostKeyChecking=no" --o "UserKnownHostsFile=/dev/null"
     else
         cat << DELIM
 Host ${NAME}
@@ -114,7 +114,7 @@ DELIM
 (( BUILD == PUSH == RUN == 0 )) && RUN=1
 
 # Grab the container name and any trailing arguments
-shift $(( ${OPTIND} - 1 ))
+shift $(( OPTIND - 1 ))
 CONTAINER_NAME=$1
 shift
 CMD=$@
@@ -133,20 +133,20 @@ fi
 [ -e "${DIRNAME}/run.sh" ] && source "${DIRNAME}/run.sh"
 
 # Default implementations of each of these
-[ `type -t build` ] || build () {
-    veval ${BUILD_DOCKER} ${QUIETFLAG} --rm -t ${CONTAINER_NAME} ${DIRNAME}
-    veval docker tag ${CONTAINER_NAME} ${USERNAME}/${CONTAINER_NAME}
+[ "$(type -t build)" ] || build () {
+    veval ${BUILD_DOCKER} ${QUIETFLAG} --rm -t "${CONTAINER_NAME}" "${DIRNAME}"
+    veval docker tag "${CONTAINER_NAME}" ${USERNAME}/"${CONTAINER_NAME}"
 }
-[ `type -t run` ] || run () {
-    veval exec ${RUN_DOCKER} -i -t ${CONTAINER_NAME} ${CMD}
+[ "$(type -t run)" ] || run () {
+    veval exec ${RUN_DOCKER} -i -t "${CONTAINER_NAME}" ${CMD}
 }
-[ `type -t push` ] || push () {
-    veval docker tag ${CONTAINER_NAME} ${REGISTRY}/${CONTAINER_NAME}
-    veval docker push ${REGISTRY}/${CONTAINER_NAME}
+[ "$(type -t push)" ] || push () {
+    veval docker tag "${CONTAINER_NAME}" "${REGISTRY}"/"${CONTAINER_NAME}"
+    veval docker push "${REGISTRY}"/"${CONTAINER_NAME}"
 }
 
 # Now, make it so...
-[ ${BUILD} -eq 1 ] && { (( ${QUIET} == 0 )) && echo "Building..."; build; }
-[ ${PUSH} -eq 1 ] && { (( ${QUIET} == 0 )) && echo "Pushing..."; push; }
-[ ${RUN} -eq 1 ] && { (( ${QUIET} == 0 )) && echo "Running..."; run; }
+[ ${BUILD} -eq 1 ] && { (( QUIET == 0 )) && echo "Building..."; build; }
+[ ${PUSH} -eq 1 ] && { (( QUIET == 0 )) && echo "Pushing..."; push; }
+[ ${RUN} -eq 1 ] && { (( QUIET == 0 )) && echo "Running..."; run; }
 exit 0
