@@ -263,3 +263,8 @@ aws_logout() {
    unset AWS_SECURITY_TOKEN AWS_SESSION_TOKEN
    unset AWS_ROLES AWS_ROLE AWS_ROLE_SESSION_NAME
 }
+
+alias in-cpdev="rea-assuming cpdev-Developer"
+alias in-gandalf="rea-assuming Gandalf-Dev-Role"
+alias in-prod="rea-assuming Shared-Prod-NormalUser"
+alias in-stg="rea-assuming Shared-Staging-NormalUser"
