@@ -9,10 +9,10 @@ build () {
 run () {
     ${RUN_DOCKER} -it \
       -v ~:/Users/silarsis \
-      -v ~/.credulous:/home/silarsis/.credulous \
       -v ~/.rea-aminate:/home/silarsis/.rea-aminate \
       -v ~/.rea-assuming:/home/silarsis/.rea-assuming \
       -v ~/.ssh:/home/silarsis/.ssh \
       -v /var/run/docker.sock:/var/run/docker.sock \
+      --volumes-from rvm \
       "${CONTAINER_NAME}" "${CMD}"
 }

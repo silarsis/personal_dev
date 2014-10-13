@@ -18,7 +18,8 @@ grep -v ":${MY_GID}:" /etc/group > /tmp/group && mv /tmp/group /etc/group
 echo "silarsis:x:${MY_UID}:${MY_GID}:,,,:/home/silarsis:/bin/bash" >> /etc/passwd
 echo "silarsis:x:${MY_GID}:" >> /etc/group
 addgroup --gid "$(stat -c %g /var/run/docker.sock)" docker
-usermod -G docker silarsis
+addgroup --gid "$(stat -c %g /usr/local/rvm)" rvm
+usermod -a -G docker,rvm silarsis
 cd /home/silarsis
 ln -s /Users/silarsis/git /home/silarsis/git
 ln -s /Users/silarsis/dius /home/silarsis/dius

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 build () {
-    veval "${SOURCE}" -b "${QUIETFLAG}" credulous
+    veval docker pull "$(grep '^FROM' "${DIRNAME}"/Dockerfile | cut -d' ' -f2)"
     veval "${BUILD_DOCKER}" "${QUIETFLAG}" --rm -t "${CONTAINER_NAME}" "${DIRNAME}"
     veval docker tag "${CONTAINER_NAME}" "${USERNAME}"/"${CONTAINER_NAME}"
 }
@@ -9,8 +9,8 @@ build () {
 run () {
     ${RUN_DOCKER} -it \
       -v ~:/Users/silarsis \
-      -v ~/.credulous:/home/silarsis/.credulous \
       -v ~/.ssh:/home/silarsis/.ssh \
       -v /var/run/docker.sock:/var/run/docker.sock \
+      --volumes-from rvm \
       "${CONTAINER_NAME}" "${CMD}"
 }
