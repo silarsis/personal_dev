@@ -83,7 +83,7 @@ WORKDIR /home/silarsis
 docker ps -a | grep Exit | awk '{ print $1 }' | xargs -r docker rm
 ```
 
-### Delete all untagger dangling images:
+### Delete all untagged dangling images:
 ```
 docker rmi $(docker images -f "dangling=true" -q)
 ```
