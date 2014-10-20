@@ -15,6 +15,7 @@ RUN=0
 QUIET=0
 QUIETFLAG="-q"
 
+# Swallow errors because sometimes we're using coreos not boot2docker
 command -v boot2docker >/dev/null 2>&1 && $(boot2docker shellinit) ||:
 
 SOURCE="${BASH_SOURCE[0]}"
