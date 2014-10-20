@@ -15,6 +15,8 @@ RUN=0
 QUIET=0
 QUIETFLAG="-q"
 
+command -v boot2docker >/dev/null 2>&1 && $(boot2docker shellinit) ||:
+
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   TARGET="$(readlink "$SOURCE")"
@@ -29,7 +31,7 @@ SOURCEDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 veval () {
     # Verbose eval
-    (( QUIET == 0 )) && echo $*
+    (( QUIET == 0 )) && echo "$*"
     eval $*
 }
 
@@ -130,7 +132,7 @@ if [ ! -d "${DIRNAME}" ]; then
 fi
 
 # Import any overrides for build, push and run
-[ -e "${DIRNAME}/run.sh" ] && source "${DIRNAME}/run.sh"
+[ -e "${DIRNAME}/run.sh" ] && RUNNING_DRUN=1 source "${DIRNAME}/run.sh"
 
 # Default implementations of each of these
 [ "$(type -t build)" ] || build () {
