@@ -13,6 +13,6 @@ run () {
       -v ~/.rea-assuming:/home/silarsis/.rea-assuming \
       -v ~/.ssh:/home/silarsis/.ssh \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      --volumes-from rvm \
+      --volumes-from gems \
       "${CONTAINER_NAME}" "${CMD}"
 }
