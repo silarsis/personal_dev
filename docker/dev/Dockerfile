@@ -1,27 +1,39 @@
 FROM ubuntu:trusty
+MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
+
+# Add docker apt repository
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9 \
+  && echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list
 RUN apt-get -yq update && apt-get -yq upgrade
-# Stuff I always want
-RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat telnet curl dnsutils unzip groff jq uuid-runtime
+
+# Stuff I always want or requirements for compiling things
+RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat \
+    telnet curl dnsutils unzip groff jq uuid-runtime \
+    gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev
+
+# Docker
+RUN apt-get -yq install lxc-docker-1.3.0
+
+# Configure my user
 RUN adduser --gecos '' --disabled-password silarsis
 RUN echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
-ADD https://get.docker.io/builds/Linux/x86_64/docker-latest /usr/local/bin/docker
-RUN chmod +x /usr/local/bin/docker
 USER silarsis
 ENV HOME /home/silarsis
-ENV CONTAINER_NAME Dev-Docker
 RUN git config --global color.ui auto \
   && git config --global user.email "kevin@littlejohn.id.au" \
   && git config --global user.name "Kevin Littlejohn" \
   && git config --global push.default simple
 USER root
-RUN apt-get install -yq libxml2-dev libxslt1-dev
 
 # Ruby
-RUN curl -sSL https://get.rvm.io | bash -s stable
-RUN /bin/bash -l -c "rvm requirements"
-RUN usermod -a -G rvm silarsis
+RUN cd /usr/local/src \
+  && curl -sSL http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.3.tar.gz | tar zx \
+  && cd ruby-2.1.3 \
+  && ./configure && make && make install \
+  && rm -rf /usr/local/src/ruby-2.1.3
+RUN gem install bundler
 
-# Python, for fig and the AWS CLI
+# Python
 RUN cd /usr/local/src \
   && curl -sSL https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz | tar zx \
   && cd Python-2.7.8 \
@@ -29,13 +41,11 @@ RUN cd /usr/local/src \
   && cd /tmp \
   && curl -O https://bootstrap.pypa.io/get-pip.py && python /tmp/get-pip.py \
   && rm -rf /usr/local/src/Python-2.7.8 /tmp/get-pip.py
-RUN pip install fig
 RUN pip install awscli
 
 # Keybase, for gpg
 RUN curl -sL https://deb.nodesource.com/setup | bash -
-RUN apt-get -yq install gnupg
-RUN apt-get -yq install nodejs
+RUN apt-get -yq install gnupg nodejs
 RUN npm install -g keybase-installer
 RUN keybase-installer
 
