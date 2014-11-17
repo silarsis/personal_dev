@@ -53,6 +53,14 @@ def version_matches(name, version)
   gem_hash[name] == version
 end
 
+def memory
+  [Facter.memorysize_mb.to_i/2, 512].max rescue 8096
+end
+
+def cpus
+  [Facter.processorcount.to_i/2, 1].max rescue 4
+end
+
 plugin "vagrant-vbguest"
 plugin "facter"
 #plugin "vagrant-cachier"
@@ -79,8 +87,8 @@ Vagrant.configure("2") do |config|
     vbox.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
     # Using Facter to give us a machine with half the memory and
     # half the cpus of host
-    vbox.memory = [Facter.memorysize_mb.to_i/2, 512].max
-    vbox.cpus = [Facter.processorcount.to_i/2, 1].max
+    vbox.memory = memory
+    vbox.cpus = cpus
     #vbox.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
     # Map a couple of drives through
     config.vm.synced_folder File.expand_path("~"), "/home/vagrant/host_home"
