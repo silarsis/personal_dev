@@ -24,8 +24,9 @@ DOCKER_GID=$(stat -c %g /var/run/docker.sock)
 getent group $DOCKER_GID | cut -d: -f1 | xargs --no-run-if-empty groupdel
 # Add the group and add it to the user
 addgroup --gid "$(stat -c %g /var/run/docker.sock)" host_docker
-addgroup --gid "$(stat -c %g /usr/local/lib/ruby/gems)" gems
-usermod -a -G docker,host_docker,gems silarsis
+RUBY_GID=$(stat -c %g /usr/local/ruby/bin/bundle)
+addgroup --gid $RUBY_GID ruby
+usermod -a -G docker,host_docker,ruby silarsis
 # Link in some needed dirs and do some chowning
 cd /home/silarsis
 ln -s /Users/silarsis/git /home/silarsis/git

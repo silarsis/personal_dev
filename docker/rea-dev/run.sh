@@ -2,17 +2,18 @@
 
 build () {
     [ -z "$BUILD_ONLY" ] && veval "${SOURCE}" -b "${QUIETFLAG}" dev
-    veval "${BUILD_DOCKER}" "${QUIETFLAG}" --rm -t "${CONTAINER_NAME}" "${DIRNAME}"
-    veval docker tag "${CONTAINER_NAME}" "${USERNAME}"/"${CONTAINER_NAME}"
+    veval "${SOURCE}" -b "${QUIETFLAG}" rea-ruby
+    veval docker tag dev rea-dev
 }
 
 run () {
+    ${RUN_DOCKER} --name rea-ruby rea-ruby ||:
     ${RUN_DOCKER} -it \
       -v ~:/Users/silarsis \
       -v ~/.rea-aminate:/home/silarsis/.rea-aminate \
       -v ~/.rea-assuming:/home/silarsis/.rea-assuming \
       -v ~/.ssh:/home/silarsis/.ssh \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      --volumes-from gems \
+      --volumes-from rea-ruby \
       "${CONTAINER_NAME}" "${CMD}"
 }

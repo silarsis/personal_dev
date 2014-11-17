@@ -7,3 +7,5 @@ RUN cd /tmp \
   && cd fleet-v0.8.3-linux-amd64 \
   && mv fleetctl /usr/local/bin \
   && rm -rf /tmp/fleet-*
+ENV GEM_HOME /usr/local/ruby
+ENV PATH $PATH:/usr/local/ruby/bin

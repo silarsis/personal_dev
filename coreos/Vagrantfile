@@ -25,6 +25,10 @@ class Box
     "coreos-#{update_channel}"
   end
 
+  def vmware_name
+    "vmware-#{name}"
+  end
+
   def version
     '>= 472.0.0'
   end
@@ -37,14 +41,37 @@ class Box
     "http://#{update_channel}.release.core-os.net/amd64-usr/current/#{vmware_filename}"
   end
 
+  def create_serial_logfile(vm_name)
+    logdir = File.join(File.dirname(__FILE__), 'log')
+    FileUtils.mkdir_p(logdir)
+    serial_file = File.join(logdir, "#{vm_name}-serial.txt")
+    FileUtils.touch(serial_file)
+    serial_file
+  end
+
+  def serial_logging(cfg)
+    return unless enable_serial_logging
+    serial_file = create_serial_logfile(cfg.vm.hostname)
+    cfg.vm.provider :vmware_fusion do |v|
+      v.vmx['serial0.present'] = 'TRUE'
+      v.vmx['serial0.fileType'] = 'file'
+      v.vmx['serial0.fileName'] = serial_file
+      v.vmx['serial0.tryNoRxLoss'] = 'FALSE'
+    end
+    cfg.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id, '--uart1', '0x3F8', '4']
+      vb.customize ['modifyvm', :id, '--uartmode1', serial_file]
+    end
+  end
+
   private
 
   def filename
-    'coreos_production_vagrant_vmware_fusion.json'
+    'coreos_production_vagrant.json'
   end
 
   def vmware_filename
-    'coreos_production_vagrant.json'
+    'coreos_production_vagrant_vmware_fusion.json'
   end
 
   def update_channel
@@ -59,15 +86,16 @@ end
 
 Vagrant.configure('2') do |config|
   box = Box.new(config)
-  config.vm.box = box.name
   config.vm.box_version = box.version
-  config.vm.box_url = box.url
 
-  config.vm.provider :vmware_fusion do |_vb, override|
-    override.vm.box_url = box.vmware_url
+  config.vm.provider :vmware_fusion do
+    config.vm.box = box.vmware_name
+    config.vm.box_url = box.vmware_url
   end
 
   config.vm.provider :virtualbox do |v|
+    config.vm.box = box.name
+    config.vm.box_url = box.url
     # On VirtualBox, we don't have guest additions or a functional vboxsf
     # in CoreOS, so tell Vagrant that so it can be smarter.
     v.check_guest_additions = false
@@ -81,25 +109,7 @@ Vagrant.configure('2') do |config|
     config.vm.define vm_name = format('core-%02d', i) do |cfg|
       cfg.vm.hostname = vm_name
 
-      if box.enable_serial_logging
-        logdir = File.join(File.dirname(__FILE__), 'log')
-        FileUtils.mkdir_p(logdir)
-
-        serial_file = File.join(logdir, "#{vm_name}-serial.txt")
-        FileUtils.touch(serial_file)
-
-        cfg.vm.provider :vmware_fusion do |v, _override|
-          v.vmx['serial0.present'] = 'TRUE'
-          v.vmx['serial0.fileType'] = 'file'
-          v.vmx['serial0.fileName'] = serial_file
-          v.vmx['serial0.tryNoRxLoss'] = 'FALSE'
-        end
-
-        cfg.vm.provider :virtualbox do |vb, _override|
-          vb.customize ['modifyvm', :id, '--uart1', '0x3F8', '4']
-          vb.customize ['modifyvm', :id, '--uartmode1', serial_file]
-        end
-      end
+      box.serial_logging(cfg)
 
       if box.expose_docker_tcp
         cfg.vm.network 'forwarded_port',
@@ -124,10 +134,10 @@ Vagrant.configure('2') do |config|
       end
 
       cfg.vm.synced_folder File.expand_path('~'), File.expand_path('~'),
-                           id: 'homedir', nfs: true,
+                           id: 'homedir', type: 'nfs',
                            mount_options: ['nolock,vers=3,udp']
       cfg.vm.synced_folder '/private', '/private',
-                           id: 'launchd', nfs: true,
+                           id: 'launchd', type: 'nfs',
                            mount_options: ['nolock,vers=3,udp']
 
       if File.exist?(CLOUD_CONFIG_PATH)

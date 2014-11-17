@@ -16,7 +16,7 @@ QUIET=0
 QUIETFLAG="-q"
 
 # Swallow errors because sometimes we're using coreos not boot2docker
-command -v boot2docker >/dev/null 2>&1 && $(boot2docker shellinit) ||:
+command -v boot2docker >/dev/null 2>&1 && $(boot2docker shellinit 2>/dev/null) ||:
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -71,8 +71,8 @@ while getopts ":sbB:prR:c:hvlfq" opt; do
             ;;
         f)
             # Relies on not being able to remove running containers
-            docker rm $(docker ps -aq)
-            docker rmi $(docker images -qf dangling=true)
+            docker rm $(docker ps -aq) 2>/dev/null
+            docker rmi $(docker images -qf dangling=true) 2>/dev/null
             exit 0
             ;;
         h)

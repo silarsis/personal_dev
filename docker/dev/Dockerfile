@@ -9,7 +9,7 @@ RUN apt-get -yq update && apt-get -yq upgrade
 # Stuff I always want or requirements for compiling things
 RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat \
     telnet curl dnsutils unzip groff jq uuid-runtime \
-    gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev
+    gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev libreadline6-dev
 
 # Docker
 RUN apt-get -yq install lxc-docker-1.3.0
@@ -25,13 +25,9 @@ RUN git config --global color.ui auto \
   && git config --global push.default simple
 USER root
 
-# Ruby
-RUN cd /usr/local/src \
-  && curl -sSL http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.3.tar.gz | tar zx \
-  && cd ruby-2.1.3 \
-  && ./configure && make && make install \
-  && rm -rf /usr/local/src/ruby-2.1.3
-RUN gem install bundler
+# Ruby from connected container
+
+ENV GEM_HOME /usr/local/ruby
 
 # Python
 RUN cd /usr/local/src \
