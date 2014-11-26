@@ -12,18 +12,7 @@ RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat \
     gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev libreadline6-dev
 
 # Docker
-RUN apt-get -yq install lxc-docker-1.3.0
-
-# Configure my user
-RUN adduser --gecos '' --disabled-password silarsis
-RUN echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
-USER silarsis
-ENV HOME /home/silarsis
-RUN git config --global color.ui auto \
-  && git config --global user.email "kevin@littlejohn.id.au" \
-  && git config --global user.name "Kevin Littlejohn" \
-  && git config --global push.default simple
-USER root
+RUN apt-get -yq install lxc-docker-1.3.2
 
 # Ruby from connected container
 
@@ -52,7 +41,18 @@ ADD start.sh /usr/local/bin/start.sh
 ADD user_start.sh /usr/local/bin/user_start.sh
 ADD container_name /usr/local/etc/container_name
 
-RUN echo 'export PS1="\[\033[0;31m\][`cat /usr/local/etc/container_name`]\[\033[0m\]:\u:\w\$ "' >> /home/silarsis/.bashrc
+# Configure my user
+RUN adduser --gecos '' --disabled-password silarsis
+RUN echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
+USER silarsis
+ENV HOME /home/silarsis
+RUN git config --global color.ui auto \
+  && git config --global user.email "kevin@littlejohn.id.au" \
+  && git config --global user.name "Kevin Littlejohn" \
+  && git config --global push.default simple
+ADD bash_profile /home/silarsis/.bash_profile
+USER root
+
 ENTRYPOINT ["/usr/local/bin/start.sh"]
 
 ONBUILD ADD container_name /usr/local/etc/container_name

@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+source 'http://rubygems.delivery.realestate.com.au'
+
+gem 'pry'
+gem 'rake'
+gem 'rspec', '~> 3.1'
+gem 'rspec-mocks', '~> 3.1.1'
+gem 'rea-assuming'

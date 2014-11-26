@@ -15,4 +15,4 @@ export GEM_HOME=/usr/local/ruby
 
 eval $(ssh-agent -s -a /tmp/ssh-agent.sock)
 [ -d ~/.ssh/auto ] && ssh-add ~/.ssh/auto/*
-tmux
+exec tmux

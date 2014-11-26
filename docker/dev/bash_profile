@@ -1,0 +1,5 @@
+if [ -n $TMUX ]; then
+  # We're in tmux, make sure we trap INT
+  trap /bin/true INT
+  export PS1="\[\033[0;31m\][`cat /usr/local/etc/container_name`]\[\033[0m\]:\u:\w\$ "
+fi
