@@ -1,7 +1,7 @@
 FROM ubuntu:trusty
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 RUN apt-get -yq update && apt-get -yq upgrade \
-  && apt-get -yq install curl gcc make libssl-dev zlib1g-dev
+  && apt-get -yq install curl gcc make libssl-dev zlib1g-dev libreadline-dev
 # Ruby
 WORKDIR /usr/local/src
 RUN curl -sSL http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.3.tar.gz | tar zx \
@@ -11,6 +11,9 @@ RUN curl -sSL http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.3.tar.gz | tar zx
 ENV GEM_HOME /usr/local/ruby
 RUN /usr/local/ruby/bin/gem install bundler --no-ri --no-rdoc \
     && /usr/local/ruby/bin/bundle config --global jobs 4
+ADD Gemfile /usr/local/ruby/base/Gemfile
+WORKDIR /usr/local/ruby/base
+RUN chmod g+w /usr/local/ruby/base && /usr/local/ruby/bin/bundle install
 RUN addgroup ruby \
   && chgrp -R ruby /usr/local/ruby \
   && chmod -R g+w /usr/local/ruby \
