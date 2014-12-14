@@ -1,19 +1,17 @@
 FROM ubuntu:trusty
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 RUN apt-get -yq update && apt-get -yq upgrade \
-  && apt-get -yq install curl gcc make libssl-dev zlib1g-dev libreadline-dev
+  && apt-get -yq install autoconf bison build-essential libssl-dev libyaml-dev \
+    libreadline6-dev zlib1g-dev libncurses5-dev curl git openssl
+
 # Ruby
 WORKDIR /usr/local/src
-RUN curl -sSL http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.3.tar.gz | tar zx \
-  && cd /usr/local/src/ruby-2.1.3 \
-  && ./configure --prefix=/usr/local/ruby && make && make install \
-  && rm -rf /usr/local/src/ruby-2.1.3
-ENV GEM_HOME /usr/local/ruby
+RUN git clone https://github.com/sstephenson/ruby-build.git \
+  && cd ruby-build \
+  && ./install.sh
+RUN /usr/local/bin/ruby-build 2.1.5 /usr/local/ruby
 RUN /usr/local/ruby/bin/gem install bundler --no-ri --no-rdoc \
     && /usr/local/ruby/bin/bundle config --global jobs 4
-ADD Gemfile /usr/local/ruby/base/Gemfile
-WORKDIR /usr/local/ruby/base
-RUN chmod g+w /usr/local/ruby/base && /usr/local/ruby/bin/bundle install
 RUN addgroup ruby \
   && chgrp -R ruby /usr/local/ruby \
   && chmod -R g+w /usr/local/ruby \

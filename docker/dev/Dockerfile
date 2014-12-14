@@ -9,14 +9,11 @@ RUN apt-get -yq update && apt-get -yq upgrade
 # Stuff I always want or requirements for compiling things
 RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat \
     telnet curl dnsutils unzip groff jq uuid-runtime \
-    gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev libreadline6-dev
+    gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev libreadline6-dev \
+    libyaml-0-2
 
 # Docker
 RUN apt-get -yq install lxc-docker-1.3.2
-
-# Ruby from connected container
-
-ENV GEM_HOME /usr/local/ruby
 
 # Python
 RUN cd /usr/local/src \
