@@ -1,6 +1,0 @@
-source 'https://rubygems.org'
-
-gem 'pry'
-gem 'rake'
-gem 'rspec', '~> 3.1'
-gem 'rspec-mocks', '~> 3.1.1'

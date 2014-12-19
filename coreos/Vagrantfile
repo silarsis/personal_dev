@@ -30,7 +30,7 @@ class Box
   end
 
   def version
-    '>= 472.0.0'
+    '>= 522.1.0'
   end
 
   def url

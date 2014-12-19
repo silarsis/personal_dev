@@ -1,4 +1,4 @@
-FROM ruby
+FROM local-ruby
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
 RUN apt-get -yq update && apt-get -yq upgrade && apt-get -yq install patch

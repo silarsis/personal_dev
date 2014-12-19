@@ -7,13 +7,21 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 36A1D7869245C8950F9
 RUN apt-get -yq update && apt-get -yq upgrade
 
 # Stuff I always want or requirements for compiling things
-RUN apt-get -yq install git less vim sudo strace lsof tmux make tcpdump netcat \
-    telnet curl dnsutils unzip groff jq uuid-runtime \
+RUN apt-get -yq install less vim sudo strace lsof tmux make tcpdump netcat \
+    telnet curl dnsutils unzip groff jq uuid-runtime wget \
     gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev libreadline6-dev \
-    libyaml-0-2
+    libyaml-0-2 libcurl4-gnutls-dev libexpat1-dev gettext libz-dev
+
+# Git from source after a security issue
+RUN cd /usr/local/src \
+  && wget https://www.kernel.org/pub/software/scm/git/git-2.2.1.tar.gz \
+  && tar zxf git*.tar.gz \
+  && cd git* \
+  && ./configure && make && make install \
+  && rm -rf /usr/local/src/git*
 
 # Docker
-RUN apt-get -yq install lxc-docker-1.3.2
+RUN apt-get -yq install lxc-docker-1.3.3
 
 # Python
 RUN cd /usr/local/src \

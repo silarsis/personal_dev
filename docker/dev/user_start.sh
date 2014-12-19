@@ -18,4 +18,4 @@ export GEM_PATH=/usr/local/ruby/lib/ruby/gems/2.1.0/
 
 eval $(ssh-agent -s -a /tmp/ssh-agent.sock)
 [ -d ~/.ssh/auto ] && ssh-add ~/.ssh/auto/*
-exec tmux
+exec bash
