@@ -3,7 +3,7 @@
 build () {
     [ -z "$BUILD_ONLY" ] && veval "${SOURCE}" -b "${QUIETFLAG}" dev
     veval "${SOURCE}" -b "${QUIETFLAG}" rea-ruby
-    veval docker tag dev rea-dev
+    veval docker tag -f dev rea-dev
 }
 
 run () {

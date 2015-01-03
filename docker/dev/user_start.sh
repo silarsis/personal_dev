@@ -11,8 +11,8 @@ export IDP_USER=${AWS_USER}
 
 # Ruby
 export PATH=$PATH:/usr/local/ruby/bin
-export GEM_HOME=/usr/local/ruby/lib/ruby/gems/2.1.0/
-export GEM_PATH=/usr/local/ruby/lib/ruby/gems/2.1.0/
+export GEM_HOME=/usr/local/ruby/lib/ruby/gems/2.1.0
+export GEM_PATH=/usr/local/ruby/lib/ruby/gems/2.1.0
 
 /usr/local/ruby/bin/bundle config --global jobs 4
 

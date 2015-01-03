@@ -7,8 +7,9 @@ REGISTRY="localhost:5000" # Change this for a different private registry locatio
 
 set -e
 
-BUILD_DOCKER="docker build"
-RUN_DOCKER="docker run"
+DOCKER_CMD="docker"
+BUILD_DOCKER="${DOCKER_CMD} build"
+RUN_DOCKER="${DOCKER_CMD} run"
 BUILD=0
 PUSH=0
 RUN=0
@@ -71,8 +72,8 @@ while getopts ":sbB:prR:c:hvlfq" opt; do
             ;;
         f)
             # Relies on not being able to remove running containers
-            docker rm $(docker ps -aq) 2>/dev/null
-            docker rmi $(docker images -qf dangling=true) 2>/dev/null
+            ${DOCKER_CMD} rm $(${DOCKER_CMD} ps -aq) 2>/dev/null
+            ${DOCKER_CMD} rmi $(${DOCKER_CMD} images -qf dangling=true) 2>/dev/null
             exit 0
             ;;
         h)
@@ -89,7 +90,7 @@ done
 
 containerIP () {
     # Call with the container ID, sets ${IP}
-    IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' "$1")
+    IP=$(${DOCKER_CMD} inspect --format '{{ .NetworkSettings.IPAddress }}' "$1")
 }
 
 sshConfig () {
@@ -138,14 +139,14 @@ fi
 # Default implementations of each of these
 [ "$(type -t build)" ] || build () {
     veval ${BUILD_DOCKER} ${QUIETFLAG} --rm -t "${CONTAINER_NAME}" "${DIRNAME}"
-    veval docker tag "${CONTAINER_NAME}" ${USERNAME}/"${CONTAINER_NAME}"
+    veval ${DOCKER_CMD} tag -f "${CONTAINER_NAME}" ${USERNAME}/"${CONTAINER_NAME}"
 }
 [ "$(type -t run)" ] || run () {
     veval exec ${RUN_DOCKER} -i -t "${CONTAINER_NAME}" ${CMD}
 }
 [ "$(type -t push)" ] || push () {
-    veval docker tag "${CONTAINER_NAME}" "${REGISTRY}"/"${CONTAINER_NAME}"
-    veval docker push "${REGISTRY}"/"${CONTAINER_NAME}"
+    veval ${DOCKER_CMD} tag "${CONTAINER_NAME}" "${REGISTRY}"/"${CONTAINER_NAME}"
+    veval ${DOCKER_CMD} push "${REGISTRY}"/"${CONTAINER_NAME}"
 }
 
 # Now, make it so...

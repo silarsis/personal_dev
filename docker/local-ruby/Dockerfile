@@ -18,3 +18,8 @@ RUN addgroup ruby \
   && chgrp -R ruby /usr/local/ruby \
   && chmod -R g+w /usr/local/ruby \
   && find /usr/local/ruby -type d -exec chmod g+s {} \;
+ADD Gemfile /usr/local/ruby/local/Gemfile
+WORKDIR /usr/local/ruby/local
+RUN chmod g+w /usr/local/ruby/local \
+  && /usr/local/ruby/bin/bundle install
+VOLUME /usr/local/ruby
