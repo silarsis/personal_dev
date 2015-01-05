@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'watchr'
+require 'yaml'
+
+def default_config
+  {
+    'name' => 'test-container',
+    'entrypoint' => nil,
+    'image' => 'ubuntu:trusty',
+    'command' => 'rspec spec',
+    'watch' => '**/*.rb'
+  }
+end
+
+def config
+  default_config.merge(YAML.load(open('./watchr.yaml')))
+end
+
+def entrypoint
+  config['entrypoint'].nil? ? '' : "--entrypoint #{config['entrypoint']}"
+end
+
+def command
+  config['command'].nil? ? '' : config['command']
+end
+
+def run(filename)
+  cmd = "docker run --name #{config['name']} -it -v `pwd`:/app #{entrypoint} #{config['image']} #{command}"
+  system(cmd)
+end
+
+def start(filename)
+  system("docker start -ai #{config['name']}")
+end
+
+def run_or_start(filename)
+  system("docker ps -a | grep #{config['name']} >/dev/null") ? start(filename) : run(filename)
+end
+
+watch_files = Dir[config['watch']].join('|')
+script = Watchr::Script.new
+script.watch( watch_files ) { |filename| run_or_start(filename) }
+controller = Watchr::Controller.new(script, Watchr.handler.new)
+controller.run
