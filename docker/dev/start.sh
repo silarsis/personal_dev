@@ -1,38 +1,48 @@
 #!/bin/bash
 
+configure_homedir() {
+  cd /home/silarsis
+  # Link in some needed dirs and do some chowning
+  ln -s /Users/silarsis/git /home/silarsis/git
+  ln -s /Users/silarsis/dius /home/silarsis/dius
+  ln -s /Users/silarsis/.ssh /home/silarsis/.ssh
+  cp /usr/local/src/bash_profile /home/silarsis/.bash_profile && chown silarsis.silarsis /home/silarsis/.bash_profile
+}
+
+get_current_variables() {
+  MY_UID=$(stat -c %u /Users/silarsis/.bashrc)
+  MY_GID=$(stat -c %g /Users/silarsis/.bashrc)
+  MY_UMASK=$(umask)
+  RUBY_GID=$(stat -c %g /usr/local/ruby/bin/bundle)
+  DOCKER_GID=$(stat -c %g /var/run/docker.sock)
+}
+
+delete_clashes() {
+  # Delete anything in the container that has a matching uid or gid
+  getent group ${MY_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
+  getent group ${DOCKER_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
+}
+
+add_user_and_groups() {
+  addgroup --gid ${DOCKER_GID} host_docker
+  addgroup --gid ${RUBY_GID} ruby
+  addgroup --gid ${MY_GID} silarsis
+  adduser --uid ${MY_UID} --gid ${MY_GID} --gecos '' --disabled-password silarsis
+  echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
+  usermod -a -G docker,host_docker,ruby silarsis
+}
+
 set -e
 set -x
 
-# There's a big dance here to change the user UID and GID to match that
-# of the mounted filesystem.
-
-OLD_UID=$(id -u silarsis)
-OLD_GID=$(id -g silarsis)
-MY_UID=$(stat -c %u /Users/silarsis/.bashrc)
-MY_GID=$(stat -c %g /Users/silarsis/.bashrc)
-MY_UMASK=$(umask)
+get_current_variables
 umask 0133
-id silarsis 2>/dev/null && userdel silarsis
-getent group silarsis >/dev/null && groupdel silarsis
-# There may be some arbitrary files that clash here (dialout group owned)
-#grep -v ":${MY_GID}:" /etc/group > /tmp/group && mv /tmp/group /etc/group
-getent group $MY_GID | cut -d: -f1 | xargs --no-run-if-empty groupdel
-echo "silarsis:x:${MY_UID}:${MY_GID}:,,,:/home/silarsis:/bin/bash" >> /etc/passwd
-echo "silarsis:x:${MY_GID}:" >> /etc/group
-# Delete the group if it exists (boot2docker)
-DOCKER_GID=$(stat -c %g /var/run/docker.sock)
-getent group $DOCKER_GID | cut -d: -f1 | xargs --no-run-if-empty groupdel
-# Add the group and add it to the user
-addgroup --gid "$(stat -c %g /var/run/docker.sock)" host_docker
-RUBY_GID=$(stat -c %g /usr/local/ruby/bin/bundle)
-addgroup --gid $RUBY_GID ruby
-usermod -a -G docker,host_docker,ruby silarsis
-# Link in some needed dirs and do some chowning
-cd /home/silarsis
-ln -s /Users/silarsis/git /home/silarsis/git
-ln -s /Users/silarsis/dius /home/silarsis/dius
-find . -xdev -print0 -uid "${OLD_UID}" | xargs -0 chown silarsis
-find . -xdev -print0 -gid "${OLD_GID}" | xargs -0 chgrp silarsis
-umask "${MY_UMASK}"
+delete_clashes
+add_user_and_groups
+configure_homedir
+umask ${MY_UMASK}
+
 # Pass things over to user land
+set +e
+set +x
 exec su -l -s /usr/local/bin/user_start.sh silarsis

@@ -10,7 +10,6 @@ run () {
     ${RUN_DOCKER} --name ruby local-ruby ||:
     ${RUN_DOCKER} -it \
       -v ~:/Users/silarsis \
-      -v ~/.ssh:/home/silarsis/.ssh \
       -v /var/run/docker.sock:/var/run/docker.sock \
       --volumes-from ruby \
       "${CONTAINER_NAME}" "${CMD}"

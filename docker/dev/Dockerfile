@@ -45,18 +45,7 @@ ADD tmux.conf /etc/tmux.conf
 ADD start.sh /usr/local/bin/start.sh
 ADD user_start.sh /usr/local/bin/user_start.sh
 ADD container_name /usr/local/etc/container_name
-
-# Configure my user
-RUN adduser --gecos '' --disabled-password silarsis
-RUN echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
-USER silarsis
-ENV HOME /home/silarsis
-RUN git config --global color.ui auto \
-  && git config --global user.email "kevin@littlejohn.id.au" \
-  && git config --global user.name "Kevin Littlejohn" \
-  && git config --global push.default simple
-ADD bash_profile /home/silarsis/.bash_profile
-USER root
+ADD bash_profile /usr/local/src/bash_profile
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
 
