@@ -18,7 +18,7 @@ get_current_variables() {
 }
 
 delete_clashes() {
-  # Delete anything in the container that has a matching uid or gid
+  # Delete all in the container that matches uid or gid to external resources
   getent group ${MY_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
   getent group ${DOCKER_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
 }
