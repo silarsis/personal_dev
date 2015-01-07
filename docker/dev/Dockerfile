@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:latest
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
 # Add docker apt repository
@@ -21,7 +21,7 @@ RUN cd /usr/local/src \
   && rm -rf /usr/local/src/git*
 
 # Docker
-RUN apt-get -yq install lxc-docker-1.3.3
+RUN apt-get -yq install lxc-docker-1.4.1
 
 # Python
 RUN cd /usr/local/src \
