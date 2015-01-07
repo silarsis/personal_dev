@@ -1,12 +1,6 @@
 #cloud-config
 
 coreos:
-  users:
-    - name: core
-      groups:
-        - sudo
-        - docker
-      coreos-ssh-import-github: silarsis
   etcd:
       discovery: https://discovery.etcd.io/512ba2e83a8d227672e8a20e69e70efb
       addr: $private_ipv4:4001
@@ -86,3 +80,9 @@ coreos:
         Restart=always
         Environment=FLEET_PUBLIC_IP=$private_ipv4
         ExecStart=/usr/bin/fleet
+users:
+  - name: core
+    groups:
+      - sudo
+      - docker
+    coreos-ssh-import-github: silarsis
