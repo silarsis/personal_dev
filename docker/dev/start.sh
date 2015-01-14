@@ -30,7 +30,6 @@ configure_homedir() {
   ln -s /Users/silarsis/git /home/silarsis/git
   ln -s /Users/silarsis/dius /home/silarsis/dius
   ln -s /Users/silarsis/.ssh /home/silarsis/.ssh
-  cp /usr/local/src/bash_profile /home/silarsis/.bash_profile && chown silarsis.silarsis /home/silarsis/.bash_profile
 }
 
 set -e
@@ -46,4 +45,4 @@ umask ${MY_UMASK}
 # Pass things over to user land
 set +e
 set +x
-exec su -l -s /usr/local/bin/user_start.sh silarsis
+su -l silarsis

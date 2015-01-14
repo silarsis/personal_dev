@@ -7,7 +7,7 @@ build () {
 }
 
 run () {
-    ${RUN_DOCKER} --name rea-ruby rea-ruby ||:
+    ${RUN_DOCKER} --name rea-ruby rea-ruby >/dev/null ||:
     ${RUN_DOCKER} -it \
       -v ~:/Users/silarsis \
       -v /var/run/docker.sock:/var/run/docker.sock \

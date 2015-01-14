@@ -10,7 +10,8 @@ RUN apt-get -yq update && apt-get -yq upgrade
 RUN apt-get -yq install less vim sudo strace lsof tmux make tcpdump netcat \
     telnet curl dnsutils unzip groff jq uuid-runtime wget \
     gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev libreadline6-dev \
-    libyaml-0-2 libcurl4-gnutls-dev libexpat1-dev gettext libz-dev
+    libyaml-0-2 libcurl4-gnutls-dev libexpat1-dev gettext libz-dev \
+    bash-completion
 
 # Git from source after a security issue
 RUN cd /usr/local/src \
@@ -40,12 +41,11 @@ RUN npm install -g keybase-installer
 RUN keybase-installer
 
 # Local scripts for configuration
-ADD drun.sh /etc/profile.d/drun.sh
+ADD drun_profile.sh /etc/profile.d/drun.sh
 ADD tmux.conf /etc/tmux.conf
 ADD start.sh /usr/local/bin/start.sh
-ADD user_start.sh /usr/local/bin/user_start.sh
 ADD container_name /usr/local/etc/container_name
-ADD bash_profile /usr/local/src/bash_profile
+ADD bash_profile /etc/skel/.bash_profile
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
 

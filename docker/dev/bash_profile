@@ -1,5 +1,32 @@
-if [ -n $TMUX ]; then
-  # We're in tmux, make sure we trap INT
-  trap /bin/true INT
-  export PS1="\[\033[0;31m\][`cat /usr/local/etc/container_name`]\[\033[0m\]:\u:\w\$ "
+if [ -z $TMUX ]; then
+  # AWS environment
+  export AWS_CLI=/usr/local/bin/aws
+  export AWS_REGION=ap-southeast-2
+  export AWS_USER=kevin.littlejohn
+  export STACK_NAME=kevinl
+  export IDP_HOST=idp.realestate.com.au
+  export IDP_USER=${AWS_USER}
+
+  # Ruby
+  export PATH=$PATH:/usr/local/ruby/bin
+  export GEM_HOME=/usr/local/ruby/lib/ruby/gems/2.1.0
+  export GEM_PATH=/usr/local/ruby/lib/ruby/gems/2.1.0
+  /usr/local/ruby/bin/bundle config --global jobs 4
+
+  # SSH agent and keys
+  eval $(ssh-agent -s -a /tmp/ssh-agent.sock)
+  [ -d ~/.ssh/auto ] && ssh-add ~/.ssh/auto/*
+
+  # git configuration
+  git config --global color.ui auto \
+    && git config --global user.email "kevin@littlejohn.id.au" \
+    && git config --global user.name "Kevin Littlejohn" \
+    && git config --global push.default simple \
+    && git config --global github.user silarsis
 fi
+
+[ -f ~/.bashrc ] && . ~/.bashrc
+
+export PS1="\[\033[0;31m\][`cat /usr/local/etc/container_name`]\[\033[0m\]:\u:\w\$ "
+
+reset

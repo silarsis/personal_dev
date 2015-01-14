@@ -68,7 +68,7 @@ while getopts ":sbB:prR:c:hvlfq" opt; do
             QUIET=1
             ;;
         l)
-            find -L ~/docker/ "${SOURCEDIR}" -maxdepth 1 -type d -exec basename {} \; | grep -v '^\docker$' | sort | uniq
+            find -L ~/docker/ "${SOURCEDIR}" -maxdepth 1 -type d -exec basename {} \; 2>/dev/null | grep -v '^\docker$' | sort | uniq
             ;;
         f)
             # Relies on not being able to remove running containers
