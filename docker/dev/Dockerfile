@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM debian:jessie
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
 # Add docker apt repository
@@ -11,11 +11,11 @@ RUN apt-get -yq install less vim sudo strace lsof tmux make tcpdump netcat \
     telnet curl dnsutils unzip groff jq uuid-runtime wget \
     gcc zlib1g-dev libxml2-dev libxslt1-dev libssl-dev libreadline6-dev \
     libyaml-0-2 libcurl4-gnutls-dev libexpat1-dev gettext libz-dev \
-    bash-completion
+    bash-completion libyaml-dev
 
 # Git from source after a security issue
 RUN cd /usr/local/src \
-  && wget https://www.kernel.org/pub/software/scm/git/git-2.2.1.tar.gz \
+  && wget https://www.kernel.org/pub/software/scm/git/git-2.2.2.tar.gz \
   && tar zxf git*.tar.gz \
   && cd git* \
   && ./configure && make && make install \
@@ -32,7 +32,7 @@ RUN cd /usr/local/src \
   && cd /tmp \
   && curl -O https://bootstrap.pypa.io/get-pip.py && python /tmp/get-pip.py \
   && rm -rf /usr/local/src/Python-2.7.8 /tmp/get-pip.py
-RUN pip install awscli
+RUN pip install awscli fig
 
 # Keybase, for gpg
 RUN curl -sL https://deb.nodesource.com/setup | bash -

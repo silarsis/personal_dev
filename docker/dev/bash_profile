@@ -1,4 +1,7 @@
 if [ -z $TMUX ]; then
+  # Ignore the first ctrl-d
+  export IGNOREEOF=1
+
   # AWS environment
   export AWS_CLI=/usr/local/bin/aws
   export AWS_REGION=ap-southeast-2
