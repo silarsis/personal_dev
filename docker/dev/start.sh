@@ -20,7 +20,6 @@ add_user_and_groups() {
   addgroup --gid ${DOCKER_GID} host_docker
   addgroup --gid ${RUBY_GID} ruby
   adduser --uid ${MY_UID} --gid ${MY_GID} --gecos '' --disabled-password silarsis
-  echo 'silarsis ALL = NOPASSWD: ALL' >> /etc/sudoers
   usermod -a -G docker,host_docker,ruby silarsis
 }
 

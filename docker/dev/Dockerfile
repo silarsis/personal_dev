@@ -46,6 +46,7 @@ ADD tmux.conf /etc/tmux.conf
 ADD start.sh /usr/local/bin/start.sh
 ADD container_name /usr/local/etc/container_name
 ADD bash_profile /etc/skel/.bash_profile
+ADD sudoers /etc/sudoers
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
 

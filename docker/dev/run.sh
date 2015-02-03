@@ -1,9 +1,9 @@
 #!/bin/bash
 
 build () {
-    veval docker pull "$(grep '^FROM' "${DIRNAME}"/Dockerfile | cut -d' ' -f2)"
+    veval "${DOCKER_CMD}" pull "$(grep '^FROM' "${DIRNAME}"/Dockerfile | cut -d' ' -f2)"
     veval "${BUILD_DOCKER}" "${QUIETFLAG}" --rm -t "${CONTAINER_NAME}" "${DIRNAME}"
-    veval docker tag -f "${CONTAINER_NAME}" "${USERNAME}"/"${CONTAINER_NAME}"
+    veval "${DOCKER_CMD}" tag -f "${CONTAINER_NAME}" "${USERNAME}"/"${CONTAINER_NAME}"
 }
 
 run () {

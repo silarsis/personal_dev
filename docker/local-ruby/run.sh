@@ -1,5 +1,5 @@
 #!/bin/bash
 
 run() {
-    veval docker run -v /usr/local/ruby --name ruby ruby
+    veval "${RUN_DOCKER}" -v /usr/local/ruby --name ruby ruby
 }

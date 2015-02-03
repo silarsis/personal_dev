@@ -13,11 +13,9 @@ RUN_DOCKER="${DOCKER_CMD} run"
 BUILD=0
 PUSH=0
 RUN=0
+FLUSH=0
 QUIET=0
 QUIETFLAG="-q"
-
-# Swallow errors because sometimes we're using coreos not boot2docker
-command -v boot2docker >/dev/null 2>&1 && $(boot2docker shellinit 2>/dev/null) ||:
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -37,7 +35,7 @@ veval () {
     eval $*
 }
 
-while getopts ":sbB:prR:c:hvlfq" opt; do
+while getopts ":sbB:prR:c:hvlfqx" opt; do
     case $opt in
         s)
             echo "${SOURCEDIR}"
@@ -71,10 +69,15 @@ while getopts ":sbB:prR:c:hvlfq" opt; do
             find -L ~/docker/ "${SOURCEDIR}" -maxdepth 1 -type d -exec basename {} \; 2>/dev/null | grep -v '^\docker$' | sort | uniq
             ;;
         f)
-            # Relies on not being able to remove running containers
-            ${DOCKER_CMD} rm $(${DOCKER_CMD} ps -aq) 2>/dev/null
-            ${DOCKER_CMD} rmi $(${DOCKER_CMD} images -qf dangling=true) 2>/dev/null
-            exit 0
+            FLUSH=1
+            ;;
+        x)
+            # Experimental
+            DOCKER_CMD=/Users/silarsis/bin/docker-1.5.0-rc3
+            BUILD_DOCKER="${DOCKER_CMD} build"
+            RUN_DOCKER="${DOCKER_CMD} run"
+            SOURCE="${SOURCE} -x"
+            command -v boot2docker >/dev/null 2>&1 && $(boot2docker shellinit 2>/dev/null) ||:
             ;;
         h)
             echo "Usage: ${BASH_SOURCE[0]} [-v] [-b] [-p] [-r] [-y] [-B '--no-cache'] [ -R '-P'] <container name>"
@@ -82,11 +85,18 @@ while getopts ":sbB:prR:c:hvlfq" opt; do
             echo "-B and -R let you specify build and run arguments"
             echo "-y lets you specify a new REGISTRY, for push"
             echo "-v for verbose (switch 'quiet' off for docker calls)"
+            echo "-x for experimental, use boot2docker and rc docker client"
             echo "-f to flush all non-running containers and non-tagged images older than a day"
             exit 1
             ;;
     esac
 done
+
+flush() {
+  # Relies on not being able to remove running containers
+  ${DOCKER_CMD} rm $(${DOCKER_CMD} ps -aq) 2>/dev/null
+  ${DOCKER_CMD} rmi $(${DOCKER_CMD} images -qf dangling=true) 2>/dev/null
+}
 
 containerIP () {
     # Call with the container ID, sets ${IP}
@@ -115,7 +125,9 @@ DELIM
 }
 
 # Run by default
-(( BUILD == PUSH == RUN == 0 )) && RUN=1
+(( BUILD == PUSH == RUN == FLUSH == 0 )) || { RUN=1; }
+
+[ ${FLUSH} -eq 1 ] && { (( QUIET == 0 )) && echo "Flushing..."; flush; exit 0; }
 
 # Grab the container name and any trailing arguments
 shift $(( OPTIND - 1 ))
