@@ -22,7 +22,7 @@ RUN cd /usr/local/src \
   && rm -rf /usr/local/src/git*
 
 # Docker
-RUN apt-get -yq install lxc-docker-1.4.1
+RUN apt-get -yq install lxc-docker
 
 # Python
 RUN cd /usr/local/src \

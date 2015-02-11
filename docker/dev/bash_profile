@@ -11,7 +11,6 @@ if [ -z $TMUX ]; then
   export IDP_USER=${AWS_USER}
 
   # Ruby
-  export PATH=$PATH:/usr/local/ruby/bin
   export GEM_HOME=/usr/local/ruby/lib/ruby/gems/2.1.0
   export GEM_PATH=/usr/local/ruby/lib/ruby/gems/2.1.0
   /usr/local/ruby/bin/bundle config --global jobs 4
@@ -27,6 +26,15 @@ if [ -z $TMUX ]; then
     && git config --global push.default simple \
     && git config --global github.user silarsis
 fi
+
+# Tmux belts the PATH because login bash runs /etc/profile
+export PATH=$PATH:/usr/local/ruby/bin
+
+# Handy aliases and functions
+alias laptop='ssh laptop'
+alias say='ssh laptop say'
+alias atom='ssh laptop /usr/local/bin/atom $(pwd -P)'
+either() { if [[ $? == 0 ]] ; then echo $1 ; else echo $2 ; fi }
 
 [ -f ~/.bashrc ] && . ~/.bashrc
 
