@@ -4,9 +4,9 @@ MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 RUN apt-get -yq update && apt-get -yq install curl build-essential git
 
 RUN cd /tmp \
-  && curl -OL https://github.com/coreos/fleet/releases/download/v0.8.3/fleet-v0.8.3-linux-amd64.tar.gz \
-  && tar zxf fleet-v0.8.3-linux-amd64.tar.gz \
-  && cd fleet-v0.8.3-linux-amd64 \
+  && curl -OL https://github.com/coreos/fleet/releases/download/v0.9.0/fleet-v0.9.0-linux-amd64.tar.gz \
+  && tar zxf fleet-v0.9.0-linux-amd64.tar.gz \
+  && cd fleet-v0.9.0-linux-amd64 \
   && mv fleetctl /usr/local/bin \
   && rm -rf /tmp/fleet-*
 
