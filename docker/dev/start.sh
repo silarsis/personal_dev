@@ -7,7 +7,7 @@ get_current_variables() {
   MY_GID=$(stat -c %g /Users/${USERNAME})
   MY_UMASK=$(umask)
   DOCKER_GID=$(stat -c %g /var/run/docker.sock)
-  [ -e /usr/local/ruby/bin/bundle ] && RUBY_GID=$(stat -c %g /usr/local/ruby/bin/bundle)
+  [ -e "/usr/local/ruby/bin/bundle" ] && RUBY_GID=$(stat -c %g /usr/local/ruby/bin/bundle) ||:
 }
 
 delete_clashes() {
