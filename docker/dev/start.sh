@@ -1,10 +1,8 @@
 #!/bin/bash
 
-USERNAME="silarsis"
-
 get_current_variables() {
-  MY_UID=$(stat -c %u /Users/${USERNAME})
-  MY_GID=$(stat -c %g /Users/${USERNAME})
+  MY_UID=$(stat -c %u ${MOUNTED_DIR})
+  MY_GID=$(stat -c %g ${MOUNTED_DIR})
   MY_UMASK=$(umask)
   DOCKER_GID=$(stat -c %g /var/run/docker.sock)
   if [ -e "/usr/local/ruby/bin/bundle" ]; then
@@ -23,21 +21,23 @@ delete_clashes() {
 
 add_user_and_groups() {
   addgroup --gid ${MY_GID} ${USERNAME}
-  addgroup --gid ${DOCKER_GID} host_docker
+  getent group ${DOCKER_GID} || addgroup --gid ${DOCKER_GID} host_docker
   if [ -e "/usr/local/ruby/bin/bundle" ]; then
-    addgroup --gid ${RUBY_GID} ruby
+    getent group ${RUBY_GID} || addgroup --gid ${RUBY_GID} ruby
   fi
-  adduser --uid ${MY_UID} --gid ${MY_GID} --gecos '' --disabled-password ${USERNAME}
-  usermod -a -G docker,host_docker ${USERNAME}
-  if [ -e "/usr/local/ruby/bin/bundle" ]; then
-    usermod -a -G ruby ${USERNAME}
-  fi
+  adduser --home /usr/local/home/${USERNAME} --uid ${MY_UID} --gid ${MY_GID} --gecos '' --disabled-password ${USERNAME}
+  getent group docker && usermod -a -G docker ${USERNAME} ||:
+  getent group host_docker && usermod -a -G host_docker ${USERNAME} ||:
+  getent group ruby && usermod -a -G ruby ${USERNAME} ||:
 }
 
 configure_homedir() {
   # Link in some needed dirs and do some chowning
+  ls -al /usr/local/home/nitrous
   for filename in git dius .ssh; do
-    [ -e /Users/${USERNAME}/$filename ] && ln -s /Users/${USERNAME}/$filename /home/${USERNAME}/$filename
+    if [ -e ${MOUNTED_DIR}/$filename ]; then
+      ln -s ${MOUNTED_DIR}/$filename ~${USERNAME}/$filename
+    fi
   done
 }
 
