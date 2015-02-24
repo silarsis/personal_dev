@@ -1,5 +1,7 @@
 #!/bin/bash
 
+BASE_HOMEDIR="/usr/local/home"
+
 get_current_variables() {
   MY_UID=$(stat -c %u ${MOUNTED_DIR})
   MY_GID=$(stat -c %g ${MOUNTED_DIR})
@@ -25,7 +27,8 @@ add_user_and_groups() {
   if [ -e "/usr/local/ruby/bin/bundle" ]; then
     getent group ${RUBY_GID} || addgroup --gid ${RUBY_GID} ruby
   fi
-  adduser --home /usr/local/home/${USERNAME} --uid ${MY_UID} --gid ${MY_GID} --gecos '' --disabled-password ${USERNAME}
+  mkdir ${BASE_HOMEDIR} && chmod 755 ${BASE_HOMEDIR}
+  adduser --home ${BASE_HOMEDIR}/${USERNAME} --uid ${MY_UID} --gid ${MY_GID} --gecos '' --disabled-password ${USERNAME}
   getent group docker && usermod -a -G docker ${USERNAME} ||:
   getent group host_docker && usermod -a -G host_docker ${USERNAME} ||:
   getent group ruby && usermod -a -G ruby ${USERNAME} ||:
@@ -33,10 +36,10 @@ add_user_and_groups() {
 
 configure_homedir() {
   # Link in some needed dirs and do some chowning
-  ls -al /usr/local/home/nitrous
+  USER_HOMEDIR=$(eval echo ~${USERNAME})
   for filename in git dius .ssh; do
     if [ -e ${MOUNTED_DIR}/$filename ]; then
-      ln -s ${MOUNTED_DIR}/$filename ~${USERNAME}/$filename
+      ln -s ${MOUNTED_DIR}/$filename ${USER_HOMEDIR}/$filename
     fi
   done
 }
