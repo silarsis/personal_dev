@@ -8,7 +8,7 @@ build () {
 
 run () {
     ${RUN_DOCKER} --name ruby local-ruby >/dev/null ||:
-    ${RUN_DOCKER} -it \
+    veval ${RUN_DOCKER} -it \
       -v "${HOME}":"${HOME}" \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -e USERNAME="$(id -u -n)" \
