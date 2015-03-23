@@ -5,7 +5,8 @@
     "vpc_id": "",
     "subnet_id": "" ,
     "security_group": "" ,
-    "region": ""
+    "region": "ap-southeast-2",
+    "source_ami": "ami-89a2d5b3"
   },
   "builders": [{
     "type": "amazon-windows-ebs",
