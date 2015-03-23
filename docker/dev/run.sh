@@ -7,7 +7,7 @@ build () {
 }
 
 run () {
-    ${RUN_DOCKER} --name ruby local-ruby >/dev/null ||:
+    ${RUN_DOCKER} --name ruby silarsis/ruby >/dev/null ||:
     veval ${RUN_DOCKER} -it \
       -v "${HOME}":"${HOME}" \
       -v /var/run/docker.sock:/var/run/docker.sock \
