@@ -3,7 +3,8 @@ FROM debian:jessie
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
 RUN apt-get -yq update \
-    && apt-get -yq install curl ca-certificates build-essential git mercurial
+    && apt-get -yq install curl ca-certificates build-essential git mercurial \
+      sudo vim
 
 ENV PATH $PATH:/usr/local/go/bin:/usr/local/gopath/bin
 ENV GOPATH /usr/local/gopath
