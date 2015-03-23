@@ -33,9 +33,12 @@ RUN cd $GOPATH/src/github.com/packer-community/packer-windows-plugin \
 RUN chmod go+w /tmp
 RUN adduser --disabled-password --gecos "" packer; \
   echo "packer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV HOME /home/silarsis
-USER silarsis
+ENV HOME /home/packer
+USER packer
 
 WORKDIR $HOME
+
+ADD packer.json /home/packer/packer.json
+ADD amz.userdata /home/packer/amz.userdata
 
 CMD ["bin/bash"]
