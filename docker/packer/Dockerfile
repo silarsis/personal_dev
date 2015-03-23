@@ -1,25 +1,33 @@
 # Packer
-FROM silarsis/ssh-server
+FROM debian:jessie
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
-RUN apt-get install -yq wget ca-certificates build-essential git mercurial
+RUN apt-get -yq update \
+    && apt-get -yq install curl ca-certificates build-essential git mercurial
 
-ENV PATH $PATH:/usr/local/go/bin
-ENV GOPATH /usr/local/go
+ENV PATH $PATH:/usr/local/go/bin:/usr/local/gopath/bin
+ENV GOPATH /usr/local/gopath
 
-RUN wget --no-verbose https://go.googlecode.com/files/go1.2.src.tar.gz
-RUN tar -v -C /usr/local -xzf go1.2.src.tar.gz
-RUN cd /usr/local/go/src && ./make.bash --no-clean 2>&1
+RUN curl -L https://go.googlecode.com/files/go1.2.src.tar.gz \
+    | tar -v -C /usr/local -xz \
+    && cd /usr/local/go/src && ./make.bash --no-clean
+
+RUN go get -u github.com/mitchellh/gox \
+    && git clone https://github.com/mitchellh/packer.git $GOPATH/src/github.com/mitchellh/packer \
+    && cd $GOPATH/src/github.com/mitchellh/packer \
+    && make updatedeps \
+    && make dev
+
+RUN git clone https://github.com/packer-community/packer-windows-plugins.git $GOPATH/src/github.com/packer-community/packer-windows-plugin \
+    && cd $GOPATH/src/github.com/packer-community/packer-windows-plugin \
+    && make dev \
+    && cp bin/* /usr/local/packer
 
 RUN chmod go+w /tmp
 RUN adduser --disabled-password --gecos "" packer; \
   echo "packer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV HOME /home/silarsis
 USER silarsis
-
-RUN go get -u github.com/mitchellh/gox
-RUN git clone https://github.com/mitchellh/packer.git $GOPATH/src/github.com/mitchellh/packer
-RUN cd $GOPATH/src/github.com/mitchellh/packer && make
 
 WORKDIR $HOME
 

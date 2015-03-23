@@ -1,0 +1,49 @@
+{
+  "variables": {
+    "access_key": "",
+    "secret_key": "",
+    "vpc_id": "",
+    "subnet_id": "" ,
+    "security_group": "" ,
+    "region": ""
+  },
+  "builders": [{
+    "type": "amazon-windows-ebs",
+    "region": "{{ user `region` }}",
+    "source_ami": "{{ user `source_ami` }}",
+    "instance_type": "m3.medium",
+    "ami_name": "win-2012-r2 {{ timestamp }}",
+    "user_data_file": "aws/amz.userdata",
+    "winrm_username": "packer",
+    "winrm_password": "D@rj33l1n9",
+    "winrm_wait_timeout": "30m",
+    "winrm_port": 5985,
+    "access_key": "{{ user `access_key` }}",
+    "secret_key": "{{ user `secret_key` }}",
+    "vpc_id":	"{{ user `vpc_id` }}",
+    "subnet_id": "{{ user `subnet_id` }}",
+    "security_group_id": "{{ user `security_group` }}",
+    "ami_block_device_mappings": [{
+      "device_name": "/dev/sda1",
+      "delete_on_termination": true
+    }],
+    "launch_block_device_mappings": [{
+      "device_name": "/dev/sda1",
+      "delete_on_termination": true
+    }],
+    "run_tags": {
+      "Name": "Packer Builder (Windows 2012 R2)"
+    },
+    "tags": {
+      "Name": "Windows 2012 R2"
+    }
+  }],
+  "provisioners": [{
+    "type": "powershell",
+    "inline": [
+      "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))",
+      "choco install 7zip",
+      "choco install dotnet4.5.2"
+    ]
+  }]
+}
