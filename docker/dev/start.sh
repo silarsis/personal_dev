@@ -37,7 +37,7 @@ add_user_and_groups() {
 configure_homedir() {
   # Link in some needed dirs and do some chowning
   USER_HOMEDIR=$(eval echo ~${USERNAME})
-  for filename in git dius .ssh; do
+  for filename in git rxh .ssh .asciinema; do
     if [ -e ${MOUNTED_DIR}/$filename ]; then
       ln -s ${MOUNTED_DIR}/$filename ${USER_HOMEDIR}/$filename
     fi
