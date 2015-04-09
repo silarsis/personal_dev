@@ -7,6 +7,7 @@ REGISTRY="localhost:5000" # Change this for a different private registry locatio
 
 set -e
 
+command -v docker-machine >/dev/null 2>&1 && $(docker-machine env 2>/dev/null) ||:
 DOCKER_CMD="docker"
 BUILD_DOCKER="${DOCKER_CMD} build"
 RUN_DOCKER="${DOCKER_CMD} run"
@@ -35,7 +36,7 @@ veval () {
     eval $*
 }
 
-while getopts ":sbB:prR:c:hvlfqx" opt; do
+while getopts ":sbB:prR:c:hvlfq" opt; do
     case $opt in
         s)
             echo "${SOURCEDIR}"
@@ -71,14 +72,6 @@ while getopts ":sbB:prR:c:hvlfqx" opt; do
         f)
             FLUSH=1
             ;;
-        x)
-            # Experimental
-            DOCKER_CMD=/Users/silarsis/bin/docker-1.5.0-rc3
-            BUILD_DOCKER="${DOCKER_CMD} build"
-            RUN_DOCKER="${DOCKER_CMD} run"
-            SOURCE="${SOURCE} -x"
-            command -v boot2docker >/dev/null 2>&1 && $(boot2docker shellinit 2>/dev/null) ||:
-            ;;
         h)
             echo "Usage: ${BASH_SOURCE[0]} [-v] [-b] [-p] [-r] [-y] [-B '--no-cache'] [ -R '-P'] <container name>"
             echo "build, push, run"
@@ -86,6 +79,7 @@ while getopts ":sbB:prR:c:hvlfqx" opt; do
             echo "-y lets you specify a new REGISTRY, for push"
             echo "-v for verbose (switch 'quiet' off for docker calls)"
             echo "-x for experimental, use boot2docker and rc docker client"
+            echo "-m for docker-machine"
             echo "-f to flush all non-running containers and non-tagged images older than a day"
             exit 1
             ;;
