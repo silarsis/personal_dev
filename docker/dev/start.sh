@@ -15,7 +15,7 @@ get_current_variables() {
 delete_clashes() {
   # Delete all in the container that matches uid or gid to external resources
   getent group ${MY_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
-  getent group ${DOCKER_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
+  [[ "${DOCKER_GID}" -eq $zero ]] || getent group ${DOCKER_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
   if [ -e "/usr/local/ruby/bin/bundle" ]; then
     getent group ${RUBY_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
   fi
