@@ -7,7 +7,7 @@ REGISTRY="localhost:5000" # Change this for a different private registry locatio
 
 set -e
 
-command -v docker-machine >/dev/null 2>&1 && $(docker-machine env 2>/dev/null) ||:
+command -v docker-machine >/dev/null 2>&1 && eval $(docker-machine env 2>/dev/null) ||:
 DOCKER_CMD="docker"
 BUILD_DOCKER="${DOCKER_CMD} build"
 RUN_DOCKER="${DOCKER_CMD} run"
