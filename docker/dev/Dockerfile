@@ -36,6 +36,9 @@ RUN pip install awscli fig
 RUN npm install -g keybase-installer
 RUN keybase-installer
 
+# docker-machine
+RUN curl -sLo /usr/local/bin/docker-machine $(curl -s https://api.github.com/repos/docker/machine/releases | grep browser_download_url | grep docker-machine_darwin-amd64 | head -1 | awk -F': ' '{ print $2 }' | sed 's/^"\(.*\)"$/\1/')
+
 # Local scripts for configuration
 ADD drun_profile.sh /etc/profile.d/drun.sh
 ADD tmux.conf /etc/tmux.conf
