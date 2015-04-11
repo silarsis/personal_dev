@@ -7,8 +7,6 @@ if [ -z $TMUX ]; then
   export AWS_REGION=ap-southeast-2
   export AWS_USER=kevin.littlejohn
   export STACK_NAME=kevinl
-  export IDP_HOST=idp.realestate.com.au
-  export IDP_USER=${AWS_USER}
 
   # Ruby
   export GEM_HOME=/usr/local/ruby/lib/ruby/gems/2.1.0
