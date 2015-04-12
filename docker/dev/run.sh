@@ -10,7 +10,10 @@ run () {
     ${RUN_DOCKER} --name ruby silarsis/ruby >/dev/null ||:
     veval ${RUN_DOCKER} -it \
       -v "${HOME}":"${HOME}" \
-      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "${DOCKER_CERT_PATH}":"${DOCKER_CERT_PATH}" \
+      -e DOCKER_TLS_VERIFY \
+      -e DOCKER_CERT_PATH \
+      -e DOCKER_HOST \
       -e USERNAME="$(id -u -n)" \
       -e MOUNTED_DIR="${HOME}" \
       --volumes-from ruby \

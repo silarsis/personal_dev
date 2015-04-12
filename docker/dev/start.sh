@@ -6,7 +6,9 @@ get_current_variables() {
   MY_UID=$(stat -c %u ${MOUNTED_DIR})
   MY_GID=$(stat -c %g ${MOUNTED_DIR})
   MY_UMASK=$(umask)
-  DOCKER_GID=$(stat -c %g /var/run/docker.sock)
+  if [ -e "/var/run/docker.sock" ]; then
+    DOCKER_GID=$(stat -c %g /var/run/docker.sock)
+  fi
   if [ -e "/usr/local/ruby/bin/bundle" ]; then
     RUBY_GID=$(stat -c %g /usr/local/ruby/bin/bundle)
   fi
@@ -15,7 +17,9 @@ get_current_variables() {
 delete_clashes() {
   # Delete all in the container that matches uid or gid to external resources
   getent group ${MY_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
-  [[ "${DOCKER_GID}" -eq $zero ]] || getent group ${DOCKER_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
+  if [ -e "/var/run/docker.sock" ]; then
+    [[ "${DOCKER_GID}" -eq $zero ]] || getent group ${DOCKER_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
+  fi
   if [ -e "/usr/local/ruby/bin/bundle" ]; then
     getent group ${RUBY_GID} | cut -d: -f1 | xargs --no-run-if-empty groupdel
   fi
@@ -23,7 +27,9 @@ delete_clashes() {
 
 add_user_and_groups() {
   addgroup --gid ${MY_GID} ${USERNAME}
-  getent group ${DOCKER_GID} || addgroup --gid ${DOCKER_GID} host_docker
+  if [ -e "/var/run/docker.sock" ]; then
+    getent group ${DOCKER_GID} || addgroup --gid ${DOCKER_GID} host_docker
+  fi
   if [ -e "/usr/local/ruby/bin/bundle" ]; then
     getent group ${RUBY_GID} || addgroup --gid ${RUBY_GID} ruby
   fi
