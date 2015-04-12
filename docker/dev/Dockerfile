@@ -30,7 +30,7 @@ RUN cd /usr/local/src \
   && cd /tmp \
   && curl -O https://bootstrap.pypa.io/get-pip.py && python /tmp/get-pip.py \
   && rm -rf /usr/local/src/Python-$PYTHON_VER /tmp/get-pip.py
-RUN pip install awscli fig
+RUN pip install awscli docker-compose
 
 # Keybase, for gpg
 RUN npm install -g keybase-installer
@@ -38,12 +38,6 @@ RUN keybase-installer
 
 # docker-machine
 RUN curl -sLo /usr/local/bin/docker-machine $(curl -s https://api.github.com/repos/docker/machine/releases | grep browser_download_url | grep docker-machine_darwin-amd64 | head -1 | awk -F': ' '{ print $2 }' | sed 's/^"\(.*\)"$/\1/')
-
-# Terraform
-RUN curl -sLo /usr/local/terraform.zip https://dl.bintray.com/mitchellh/terraform/terraform_0.4.1_linux_amd64.zip \
-  && cd /usr/local/bin \
-  && unzip ../terraform.zip \
-  && rm ../terraform.zip
 
 # Local scripts for configuration
 ADD drun_profile.sh /etc/profile.d/drun.sh
