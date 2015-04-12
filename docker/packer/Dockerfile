@@ -31,6 +31,17 @@ RUN cd $GOPATH/src/github.com/packer-community/packer-windows-plugin \
     && cp bin/* /usr/local/packer \
     && rm -rf $GOPATH/src
 
+# Python for awscli
+ENV PYTHON_VER=2.7.9
+RUN cd /usr/local/src \
+  && curl -sSL https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz | tar zx \
+  && cd Python-$PYTHON_VER \
+  && ./configure && make && make install \
+  && cd /tmp \
+  && curl -O https://bootstrap.pypa.io/get-pip.py && python /tmp/get-pip.py \
+  && rm -rf /usr/local/src/Python-$PYTHON_VER /tmp/get-pip.py
+RUN pip install awscli docker-compose
+
 RUN chmod go+w /tmp
 RUN adduser --disabled-password --gecos "" packer; \
   echo "packer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
@@ -42,4 +53,4 @@ WORKDIR $HOME
 ADD packer.json /home/packer/packer.json
 ADD amz.userdata /home/packer/amz.userdata
 
-CMD ["bin/bash"]
+CMD ["/bin/bash"]
