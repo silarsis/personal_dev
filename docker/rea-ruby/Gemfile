@@ -1,4 +1,0 @@
-source 'https://rubygems.org'
-source 'http://rubygems.delivery.realestate.com.au'
-
-gem 'rea-assuming'
