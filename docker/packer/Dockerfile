@@ -32,7 +32,7 @@ RUN cd $GOPATH/src/github.com/packer-community/packer-windows-plugin \
     && rm -rf $GOPATH/src
 
 # Python for awscli
-RUN apt-get -yq install zlib1g-dev
+RUN apt-get -yq install zlib1g-dev libssl-dev
 ENV PYTHON_VER=2.7.9
 RUN cd /usr/local/src \
   && curl -sSL https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz | tar zx \
