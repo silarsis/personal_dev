@@ -1,3 +1,5 @@
+https://hub.docker.com/r/silarsis/base/
+
 Support for auto proxy detection taken from
 http://askubuntu.com/questions/53443/how-do-i-ignore-a-proxy-if-not-available
 
