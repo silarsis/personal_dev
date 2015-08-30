@@ -1,4 +1,4 @@
-FROM ubuntu:saucy
+FROM ubuntu:trusty
 MAINTAINER Kevin Littlejohn <kevin@littlejohn.id.au>
 
 # Fix the locale
